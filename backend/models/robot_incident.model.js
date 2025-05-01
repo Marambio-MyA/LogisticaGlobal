@@ -24,6 +24,10 @@ const RobotIncident = sequelize.define("RobotIncident",
             type: DataTypes.INTEGER,
             allowNull: true,
         },
+        fecha_cierre: {
+            type: DataTypes.TIMESTAMP,
+            allowNull: true,
+        },
     },
     {
         tableName: "incidente_robot",
