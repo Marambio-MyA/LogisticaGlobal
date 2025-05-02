@@ -1,5 +1,6 @@
 import { sequelize } from "../config/database.js";
 import { DataTypes } from "sequelize";
+import User from "./user.model.js";
 
 const Incident = sequelize.define("Incident",
     {
@@ -33,6 +34,14 @@ const Incident = sequelize.define("Incident",
             type: DataTypes.ENUM("creado", "cerrado"),
             allowNull: false,
             defaultValue: "creado",
+        },
+        creado_por: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: User, // nombre de la tabla referenciada
+                key: "id",        // columna referenciada
+            },
         },
     },
     {

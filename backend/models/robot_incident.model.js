@@ -1,15 +1,26 @@
 import { sequelize } from "../config/database.js";
 import { DataTypes } from "sequelize";
+import Robot from "./robot.model.js";
+import Incident from "./incident.model.js";
+
 
 const RobotIncident = sequelize.define("RobotIncident",
     {
         robot_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: Robot, // nombre de la tabla referenciada
+                key: "id",        // columna referenciada
+              },
         },
         incidente_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: Incident, // nombre de la tabla referenciada
+                key: "id",        // columna referenciada
+              },
         },
         estado_final_robot: {
             type: DataTypes.ENUM("operativo", "en_reparacion", "fuera_servicio"),
