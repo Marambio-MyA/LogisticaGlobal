@@ -7,16 +7,16 @@ const createIncidentRobot = async (req, res) => {
     robot_id,
     estado_final_robot,
     trabajo_realizado,
-    reportado_por_id
+    reportado_por
   } = req.body;
 
   try {
     const result = await pool.query(
       `INSERT INTO incidente_robot 
-      (incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por_id)
+      (incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *`,
-      [incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por_id]
+      [incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -59,7 +59,7 @@ const updateIncidetRobot = async (req, res) => {
     robot_id,
     estado_final_robot,
     trabajo_realizado,
-    reportado_por_id
+    reportado_por
   } = req.body;
 
   try {
@@ -69,10 +69,10 @@ const updateIncidetRobot = async (req, res) => {
         robot_id = $2,
         estado_final_robot = $3,
         trabajo_realizado = $4,
-        reportado_por_id = $5
+        reportado_por = $5
       WHERE id = $6
       RETURNING *`,
-      [incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por_id, id]
+      [incidente_id, robot_id, estado_final_robot, trabajo_realizado, reportado_por, id]
     );
 
     if (result.rows.length === 0) {

@@ -1,12 +1,12 @@
 const pool = require('../config/db');
 
-// Función para crear un nuevo robot
+// Crear un nuevo robot
 const createRobot = async (req, res) => {
-  const { identificador, modelo, estado_actual, ubicacion_actual } = req.body;
+  const { modelo, estado_actual, ubicacion_actual } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO robots (identificador, modelo, estado_actual, ubicacion_actual) VALUES ($1, $2, $3, $4) RETURNING *',
-      [identificador, modelo, estado_actual, ubicacion_actual]
+      'INSERT INTO robots (modelo, estado_actual, ubicacion_actual) VALUES ($1, $2, $3) RETURNING *',
+      [modelo, estado_actual, ubicacion_actual]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -15,7 +15,7 @@ const createRobot = async (req, res) => {
   }
 };
 
-// Función para obtener todos los robots
+// Obtener todos los robots
 const getRobots = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM robots');
@@ -26,7 +26,7 @@ const getRobots = async (req, res) => {
   }
 };
 
-// Función para obtener un robot por ID
+// Obtener un robot por ID
 const getRobotById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -41,14 +41,14 @@ const getRobotById = async (req, res) => {
   }
 };
 
-// Función para actualizar un robot
+// Actualizar un robot
 const updateRobot = async (req, res) => {
   const { id } = req.params;
-  const { identificador, modelo, estado_actual, ubicacion_actual } = req.body;
+  const { modelo, estado_actual, ubicacion_actual } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE robots SET identificador = $1, modelo = $2, estado_actual = $3, ubicacion_actual = $4 WHERE id = $5 RETURNING *',
-      [identificador, modelo, estado_actual, ubicacion_actual, id]
+      'UPDATE robots SET modelo = $1, estado_actual = $2, ubicacion_actual = $3 WHERE id = $4 RETURNING *',
+      [modelo, estado_actual, ubicacion_actual, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Robot no encontrado' });
@@ -60,7 +60,7 @@ const updateRobot = async (req, res) => {
   }
 };
 
-// Función para eliminar un robot
+// Eliminar un robot
 const deleteRobot = async (req, res) => {
   const { id } = req.params;
   try {
