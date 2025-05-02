@@ -36,8 +36,9 @@ const RobotIncident = sequelize.define("RobotIncident",
             allowNull: true,
         },
         fecha_cierre: {
-            type: DataTypes.TIMESTAMP,
-            allowNull: true,
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
     },
     {
