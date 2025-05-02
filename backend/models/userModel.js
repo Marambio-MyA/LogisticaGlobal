@@ -19,7 +19,7 @@ async function insertUser(nombre, email, password_hash, rol) {
 
 // Obtener todos los usuarios
 const getAllUsers = async () => {
-  const query = 'SELECT * FROM users';
+  const query = 'SELECT * FROM usuarios';
   const result = await pool.query(query);
   return result.rows;
 };
