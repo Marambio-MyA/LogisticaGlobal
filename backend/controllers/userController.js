@@ -1,6 +1,6 @@
 
 const bcrypt = require('bcrypt');
-const userModel = require('../models/userModel');
+const pool = require('../config/db');
 
 
 // Function to create a new user
@@ -9,13 +9,17 @@ async function createUser(req, res) {
 
   try {
     // Validar si el correo ya existe
-    const existingUser = await userModel.findUserByEmail(email);
-    if (existingUser) return res.status(400).json({ error: 'Correo ya registrado' });
+    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (existingUser.rows.length > 0) return res.status(400).json({ error: 'Correo ya registrado' });
     // Encriptar contraseña
     const password_hash = await bcrypt.hash(password, 10);
-    const newUser = await userModel.insertUser(nombre, email, password_hash, rol);
+    const newUser = await pool.query(
+      `INSERT INTO users (nombre, email, password_hash, rol)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [nombre, email, password_hash, rol]
+    );
     // Insertar usuario
-    res.status(201).json(newUser);
+    res.status(201).json(newUser.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -25,8 +29,8 @@ async function createUser(req, res) {
 // Obtener todos los usuarios
 const getUsers = async (req, res) => {
   try {
-    const usuarios = await userModel.getAllUsers();
-    res.status(200).json(usuarios);
+    const usuarios = await pool.query('SELECT * FROM users');
+    res.status(200).json(usuarios.rows);
   } catch (err) {
     console.error("Error al obtener usuarios:", err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -38,7 +42,8 @@ const getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const usuario = await userModel.getUserById(id);
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    const usuario = result.rows[0];
     if (!usuario) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -55,8 +60,8 @@ const updateUser = async (req, res) => {
   const { nombre, email, password, rol } = req.body;
 
   try {
-    const usuario = await userModel.getUserById(id);
-    if (!usuario) {
+    const usuario = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if (!usuario.rows[0]) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
@@ -68,8 +73,14 @@ const updateUser = async (req, res) => {
     }
 
     // Actualizar usuario en la base de datos
-    const usuarioActualizado = await userModel.updateUser(id, nombre, email, password_hash, rol);
-    res.status(200).json(usuarioActualizado);
+    const updateQuery = `
+      UPDATE users
+      SET nombre = $1, email = $2, password_hash = $3, rol = $4
+      WHERE id = $5
+      RETURNING *`;
+    const values = [nombre, email, password_hash, rol, id];
+    const usuarioActualizado = await pool.query(updateQuery, values);
+    res.status(200).json(usuarioActualizado.rows[0]);
   } catch (err) {
     console.error("Error al actualizar el usuario:", err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -81,13 +92,13 @@ const deleteUser = async (req, res) => {
   const { id } = req.params;  // Debería estar en req.params si la ruta es correcta
 
   try {
-    const usuario = await userModel.getUserById(id);
-    if (!usuario) {
+    const usuario = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if (!usuario.rows[0]) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
     // Eliminar usuario
-    await userModel.deleteUser(id);
+    await pool.query('DELETE FROM users WHERE id = $1', [id]);
     res.status(200).json({ message: 'Usuario eliminado correctamente' });
   } catch (err) {
     console.error("Error al eliminar el usuario:", err);
