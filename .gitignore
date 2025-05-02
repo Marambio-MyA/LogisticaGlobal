@@ -1,3 +1,7 @@
+#environment and dependencies
+.env
+node_modules/
+
 # Logs
 logs
 *.log
