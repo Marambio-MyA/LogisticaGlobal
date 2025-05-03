@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import { pool } from '../config/database.js';
 
 // Crear un nuevo robot
 export const createRobot = async (req, res) => {

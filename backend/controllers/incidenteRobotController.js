@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import { pool } from '../config/database.js';
 
 // Crear incidente_robot
 export const createIncidentRobot = async (req, res) => {

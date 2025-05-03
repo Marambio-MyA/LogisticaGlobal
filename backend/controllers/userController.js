@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import pool from '../config/db.js';
+import { pool } from '../config/database.js';
 
 // Function to create a new user
 export async function createUser(req, res) {

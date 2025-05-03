@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import { pool } from '../config/database.js';
 
 // Crear un nuevo incidente
 export const createIncident = async (req, res) => {
