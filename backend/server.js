@@ -1,21 +1,23 @@
-const express = require('express');
+import express from 'express';
+import cors from 'cors';
+import robotRoutes from './routes/robotRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import incidenteRoutes from './routes/incidenteRoutes.js';
+import incidenteRobotRoutes from './routes/incidenteRobotRoutes.js';
+
 const app = express();
-const cors = require('cors');
-const robotRoutes = require('./routes/robotRoutes');
-const userRoutes = require('./routes/userRoutes');  // Si ya tienes rutas de usuario
-const incidenteRoutes = require('./routes/incidenteRoutes'); // Si ya tienes rutas de incidente
-const incidenteRobotRoutes = require('./routes/incidenteRobotRoutes'); // Si ya tienes rutas de incidente robot
 
 // Middlewares
 app.use(cors());
-app.use(express.json());  // Para recibir datos en formato JSON
+app.use(express.json());
 
 // Rutas
-app.use('/api', robotRoutes);  // Rutas de robots
-app.use('/api', userRoutes);   // Rutas de usuarios 
-app.use('/api', incidenteRoutes); // Rutas de incidentes
-app.use('/api', incidenteRobotRoutes); // Rutas de incidentes robots
+app.use('/api', robotRoutes);
+app.use('/api', userRoutes);
+app.use('/api', incidenteRoutes);
+app.use('/api', incidenteRobotRoutes);
 
-app.listen(3000, () => {
-  console.log('Servidor en funcionamiento en http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor en funcionamiento en http://localhost:${PORT}`);
 });
