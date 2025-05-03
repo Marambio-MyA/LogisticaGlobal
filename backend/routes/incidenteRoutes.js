@@ -1,13 +1,14 @@
-const express = require('express');
+import express from 'express';
+
 const router = express.Router();
-const {
+import {
     createIncident,
     getIncidents,
     getIncidentById,
     updateIncident,
     DeleteIncident,
     getIncidentWithRobots
-} = require('../controllers/incidenteController');
+} from '../controllers/incidenteController.js';
 
 router.post('/incidentes', createIncident);
 router.get('/incidentes',     getIncidents,);
@@ -16,4 +17,4 @@ router.put('/incidentes/:id', updateIncident);
 router.delete('/incidentes/:id', DeleteIncident);
 router.get('/incidentes/:id/robots', getIncidentWithRobots);
 
-module.exports = router;
+export default router;

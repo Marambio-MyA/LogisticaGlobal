@@ -1,10 +1,24 @@
-import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import pkg from 'pg';
+import { Sequelize } from 'sequelize';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+dotenv.config();
+
+// Configuración de pg (Pool)
+const { Pool } = pkg;
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT
+});
+
+// Configuración de Sequelize
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 export const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -15,23 +29,17 @@ export const sequelize = new Sequelize(
         port: process.env.DB_PORT,
         dialect: 'postgres',
         logging: false,
-        ssl: false,
-        // dialectOptions: {
-        //     ssl: {
-        //         require: true,
-        //         rejectUnauthorized: false 
-        //     }
-        // }
+        ssl: false
     }
 );
 
 export const syncDatabase = async () => {
     try {
-        // force: false to avoid dropping tables
-        // alter: true to make changes to tables if models change
         await sequelize.sync({ force: false, alter: true });
-        console.log('Database synchronized successfully');
     } catch (error) {
         console.error('Error synchronizing database:', error);
     }
 };
+
+// Exportación de la pool de pg y sequelize
+export { pool };

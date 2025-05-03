@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const pool = require('../config/db');
+import bcrypt from 'bcrypt';
+import { pool } from '../config/database.js';
 
 // Function to create a new user
-async function createUser(req, res) {
+export async function createUser(req, res) {
   const { nombre, email, password, rol } = req.body;
 
   try {
@@ -28,7 +28,7 @@ async function createUser(req, res) {
 }
 
 // Obtener todos los usuarios
-const getUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
   try {
     const usuarios = await pool.query('SELECT * FROM usuarios');
     res.status(200).json(usuarios.rows);
@@ -39,7 +39,7 @@ const getUsers = async (req, res) => {
 };
 
 // Obtener usuario por ID
-const getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -56,7 +56,7 @@ const getUserById = async (req, res) => {
 };
 
 // Actualizar usuario
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   const { id } = req.params;
   const { nombre, email, password, rol } = req.body;
 
@@ -89,7 +89,7 @@ const updateUser = async (req, res) => {
 };
 
 // Eliminar usuario
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -104,12 +104,4 @@ const deleteUser = async (req, res) => {
     console.error("Error al eliminar el usuario:", err);
     res.status(500).json({ error: 'Error en el servidor' });
   }
-};
-
-module.exports = {
-  createUser,
-  getUsers,
-  getUserById,
-  updateUser,
-  deleteUser
 };

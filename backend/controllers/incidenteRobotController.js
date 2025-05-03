@@ -1,7 +1,7 @@
-const pool = require('../config/db');
+import { pool } from '../config/database.js';
 
 // Crear incidente_robot
-const createIncidentRobot = async (req, res) => {
+export const createIncidentRobot = async (req, res) => {
   const {
     incidente_id,
     robot_id,
@@ -26,7 +26,7 @@ const createIncidentRobot = async (req, res) => {
 };
 
 // Obtener todos los registros
-const getIncidentRobot = async (_req, res) => {
+export const getIncidentRobot = async (_req, res) => {
   try {
     const result = await pool.query('SELECT * FROM incidente_robot');
     res.status(200).json(result.rows);
@@ -37,7 +37,7 @@ const getIncidentRobot = async (_req, res) => {
 };
 
 // Obtener uno por ID
-const getIncidentRobotById = async (req, res) => {
+export const getIncidentRobotById = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('SELECT * FROM incidente_robot WHERE id = $1', [id]);
@@ -52,7 +52,7 @@ const getIncidentRobotById = async (req, res) => {
 };
 
 // Actualizar registro
-const updateIncidetRobot = async (req, res) => {
+export const updateIncidetRobot = async (req, res) => {
   const { id } = req.params;
   const {
     incidente_id,
@@ -87,7 +87,7 @@ const updateIncidetRobot = async (req, res) => {
 };
 
 // Eliminar registro
-const deleteIncidentRobot = async (req, res) => {
+export const deleteIncidentRobot = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('DELETE FROM incidente_robot WHERE id = $1', [id]);
@@ -99,12 +99,4 @@ const deleteIncidentRobot = async (req, res) => {
     console.error('Error al eliminar incidente_robot:', err);
     res.status(500).json({ error: 'Error en el servidor' });
   }
-};
-
-module.exports = {
-    createIncidentRobot,
-    getIncidentRobot,
-    getIncidentRobotById,
-    updateIncidetRobot,
-    deleteIncidentRobot
 };

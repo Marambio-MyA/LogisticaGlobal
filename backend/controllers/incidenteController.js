@@ -1,7 +1,7 @@
-const pool = require('../config/db');
+import { pool } from '../config/database.js';
 
 // Crear un nuevo incidente
-const createIncident = async (req, res) => {
+export const createIncident = async (req, res) => {
     const {
       codigo, fecha, hora, ubicacion, tipo_incidente,
       descripcion, estado, creado_por
@@ -24,7 +24,7 @@ const createIncident = async (req, res) => {
 };
 
 // Obtener todos los incidentes
-const getIncidents = async (_req, res) => {
+export const getIncidents = async (_req, res) => {
   try {
     const result = await pool.query('SELECT * FROM incidentes');
     res.status(200).json(result.rows);
@@ -35,7 +35,7 @@ const getIncidents = async (_req, res) => {
 };
 
 // Obtener incidente por ID
-const getIncidentById = async (req, res) => {
+export const getIncidentById = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('SELECT * FROM incidentes WHERE id = $1', [id]);
@@ -50,7 +50,7 @@ const getIncidentById = async (req, res) => {
 };
 
 // Actualizar incidente
-const updateIncident = async (req, res) => {
+export const updateIncident = async (req, res) => {
     const { id } = req.params;
     const {
       codigo, fecha, hora, ubicacion, tipo_incidente,
@@ -85,7 +85,7 @@ const updateIncident = async (req, res) => {
 };
 
 // Eliminar incidente
-const DeleteIncident = async (req, res) => {
+export const DeleteIncident = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query('DELETE FROM incidentes WHERE id = $1', [id]);
@@ -100,7 +100,7 @@ const DeleteIncident = async (req, res) => {
 };
 
 // Obtener información de un incidente y los robots asociados
-const getIncidentWithRobots = async (req, res) => {
+export const getIncidentWithRobots = async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -130,13 +130,4 @@ const getIncidentWithRobots = async (req, res) => {
       console.error('Error al obtener incidente con robots:', err);
       res.status(500).json({ error: 'Error en el servidor' });
     }
-};
-
-module.exports = {
-    createIncident,
-    getIncidents,
-    getIncidentById,
-    updateIncident,
-    DeleteIncident,
-    getIncidentWithRobots
 };
