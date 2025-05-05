@@ -1,6 +1,8 @@
+// features/auth/Login.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, logout } from './authSlice';
+import { logout } from './authSlice';
+import { loginUser } from './authThunks';
 import {
   Container,
   Box,
@@ -8,18 +10,20 @@ import {
   TextField,
   Button,
   Paper,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user, loading, error } = useSelector((state) => state.auth);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     if (username.trim() && password.trim()) {
-      dispatch(login({ username, password }));
+      dispatch(loginUser({ email: username, password }));
     }
   };
 
@@ -40,13 +44,17 @@ const Login = () => {
             <Typography variant="h5" gutterBottom>
               Iniciar Sesión
             </Typography>
+            {error && <Alert severity="error">{error}</Alert>}
             <TextField
               fullWidth
-              label="Nombre de usuario"
+              label="Correo electrónico"
               variant="outlined"
               margin="normal"
+              type="email"
               value={username}
+              required
               onChange={(e) => setUsername(e.target.value)}
+              name="email"
             />
             <TextField
               fullWidth
@@ -63,8 +71,9 @@ const Login = () => {
               fullWidth
               onClick={handleLogin}
               sx={{ mt: 2 }}
+              disabled={loading}
             >
-              Entrar
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Entrar'}
             </Button>
           </Paper>
         ) : (

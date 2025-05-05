@@ -13,6 +13,7 @@ import robotRoutes from './routes/robotRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import incidenteRoutes from './routes/incidenteRoutes.js';
 import incidenteRobotRoutes from './routes/incidenteRobotRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api', robotRoutes);
 app.use('/api', userRoutes);
 app.use('/api', incidenteRoutes);
 app.use('/api', incidenteRobotRoutes);
+app.use('/api/auth', authRoutes);
 
 // Función para verificar y crear la base de datos si no existe usando pool
 async function ensureDatabaseExists() {
