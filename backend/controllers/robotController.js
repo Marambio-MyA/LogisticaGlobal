@@ -1,14 +1,12 @@
-import { pool } from '../config/database.js';
+import { sequelize } from '../config/database.js';
+import Robot from '../models/robot.model.js';
 
 // Crear un nuevo robot
 export const createRobot = async (req, res) => {
-  const { modelo, estado_actual, ubicacion_actual } = req.body;
+  const robot = req.body;
   try {
-    const result = await pool.query(
-      'INSERT INTO robots (modelo, estado_actual, ubicacion_actual) VALUES ($1, $2, $3) RETURNING *',
-      [modelo, estado_actual, ubicacion_actual]
-    );
-    res.status(201).json(result.rows[0]);
+    const result = await Robot.create(robot);
+    res.status(201).json(result);
   } catch (err) {
     console.error('Error al crear el robot:', err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -18,8 +16,8 @@ export const createRobot = async (req, res) => {
 // Obtener todos los robots
 export const getRobots = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM robots');
-    res.status(200).json(result.rows);
+    const result = await Robot.findAll();
+    res.status(200).json(result);
   } catch (err) {
     console.error('Error al obtener los robots:', err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -30,11 +28,11 @@ export const getRobots = async (req, res) => {
 export const getRobotById = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM robots WHERE id = $1', [id]);
-    if (result.rows.length === 0) {
+    const result = await Robot.findByPk(id);
+    if (!result) {
       return res.status(404).json({ error: 'Robot no encontrado' });
     }
-    res.status(200).json(result.rows[0]);
+    res.status(200).json(result);
   } catch (err) {
     console.error('Error al obtener el robot:', err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -44,16 +42,13 @@ export const getRobotById = async (req, res) => {
 // Actualizar un robot
 export const updateRobot = async (req, res) => {
   const { id } = req.params;
-  const { modelo, estado_actual, ubicacion_actual } = req.body;
+  const robot = req.body;
   try {
-    const result = await pool.query(
-      'UPDATE robots SET modelo = $1, estado_actual = $2, ubicacion_actual = $3 WHERE id = $4 RETURNING *',
-      [modelo, estado_actual, ubicacion_actual, id]
-    );
-    if (result.rows.length === 0) {
+    const result = await Robot.update(robot, { where: { id } });
+    if (!result) {
       return res.status(404).json({ error: 'Robot no encontrado' });
     }
-    res.status(200).json(result.rows[0]);
+    res.status(200).json(result);
   } catch (err) {
     console.error('Error al actualizar el robot:', err);
     res.status(500).json({ error: 'Error en el servidor' });
@@ -64,8 +59,8 @@ export const updateRobot = async (req, res) => {
 export const deleteRobot = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('DELETE FROM robots WHERE id = $1', [id]);
-    if (result.rowCount === 0) {
+    const result = await Robot.destroy({ where: { id } });
+    if (!result) {
       return res.status(404).json({ error: 'Robot no encontrado' });
     }
     res.status(200).json({ message: 'Robot eliminado correctamente' });

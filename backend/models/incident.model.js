@@ -6,7 +6,7 @@ const Incident = sequelize.define("Incident",
     {
         codigo: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: true,
         },
         fecha: {
@@ -49,5 +49,13 @@ const Incident = sequelize.define("Incident",
         timestamps: false,
     }
 );
+
+Incident.afterCreate(async (incident, options) => {
+    const codigo = `INC-${String(incident.id).padStart(3, '0')}`;
+    if (!incident.codigo) {
+      incident.codigo = codigo;
+      await incident.save({ transaction: options.transaction });
+    }
+  });
 
 export default Incident;
