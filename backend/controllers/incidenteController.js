@@ -1,5 +1,6 @@
 import { sequelize } from '../config/database.js';
 import Incident from '../models/incident.model.js';
+import Robot from '../models/robot.model.js';
 import RobotIncident from '../models/robot_incident.model.js';
 import "../models/associations.js"; // Asegúrate de que las asociaciones estén definidas antes de usar los modelos
 
@@ -10,6 +11,12 @@ export const createIncident = async (req, res) => {
     const incident = req.body;
 
     try {
+      for (const id of incident.robots_ids) {
+        const robot = await Robot.findByPk(id);
+        if (!robot) {
+          return res.status(404).json({ error: `Robot con ID ${id} no encontrado` });
+        }
+      }
       const result = await Incident.create(incident); 
 
       res.status(201).json(result);
