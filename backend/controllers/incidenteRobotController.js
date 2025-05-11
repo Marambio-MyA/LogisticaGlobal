@@ -46,6 +46,7 @@ export const updateIncidetRobot = async (req, res) => {
   const robot_incident = req.body;
 
   try {
+    const robot = await RobotIncident.findByPk(robot_incident.robot_id);
     const result = await RobotIncident.update(robot_incident, { where: { id } });
     if (!result) {
       return res.status(404).json({ error: 'Registro no encontrado' });
