@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 
-import { pool, sequelize, syncDatabase } from './config/database.js';
+import { sequelize, syncDatabase } from './config/database.js';
 import Incident from './models/incident.model.js';
 import Robot from './models/robot.model.js';
 import RobotIncident from './models/robot_incident.model.js';
@@ -32,14 +32,17 @@ app.use('/api/auth', authRoutes);
 // Función para verificar y crear la base de datos si no existe usando pool
 async function ensureDatabaseExists() {
   try {
-    const res = await pool.query(
-      `SELECT 1 FROM pg_database WHERE datname = $1`,
-      [process.env.DB_NAME]
+    const res = await sequelize.query(
+      `SELECT 1 FROM pg_database WHERE datname = :dbname`,
+      {
+        replacements: { dbname: process.env.DB_NAME },
+        type: sequelize.QueryTypes.SELECT
+      }
     );
 
     if (res.rowCount === 0) {
       console.log(`Creando base de datos "${process.env.DB_NAME}"...`);
-      await pool.query(`CREATE DATABASE "${process.env.DB_NAME}"`);
+      await sequelize.query(`CREATE DATABASE "${process.env.DB_NAME}"`);
     } else {
       console.log(`La base de datos "${process.env.DB_NAME}" ya existe.`);
     }

@@ -6,6 +6,11 @@ import Incident from "./incident.model.js";
 
 const RobotIncident = sequelize.define("RobotIncident",
     {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         robot_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -37,8 +42,7 @@ const RobotIncident = sequelize.define("RobotIncident",
         },
         fecha_cierre: {
             type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
+            allowNull: true,
         },
     },
     {
