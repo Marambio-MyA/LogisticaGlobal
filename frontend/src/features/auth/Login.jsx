@@ -1,7 +1,6 @@
 // features/auth/Login.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from './authSlice';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from './authThunks';
 import {
@@ -17,7 +16,7 @@ import {
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, user, loading, error } = useSelector((state) => state.auth);
+  const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -26,10 +25,6 @@ const Login = () => {
     if (username.trim() && password.trim()) {
       dispatch(loginUser({ email: username, password }));
     }
-  };
-
-  const handleLogout = () => {
-    dispatch(logout());
   };
 
   const navigate = useNavigate();
