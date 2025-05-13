@@ -25,6 +25,7 @@ DB_HOST = DB_HOST
 DB_NAME = DB_NAME
 DB_PASSWORD = DB_PASSWORD
 DB_PORT = DB_PORT
+JWT_SECRET = JWT_SECRET
 ```
 
 Estas variables son necesarias para establecer la conexión a la base de datos, configurar el puerto del servidor. Una vez creado, ejecutar estos comandos para iniciar al servidor.
