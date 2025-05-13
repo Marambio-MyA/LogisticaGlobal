@@ -6,6 +6,8 @@ import {
 } from '@mui/material';
 import axiosInstance from '../../../api/axiosInstance';
 import { useSelector } from 'react-redux';
+import capitalizeFirst from '../../utils/utils.jsx';
+
 
 const ESTADOS_ROBOT = ['operativo', 'en_reparacion', 'fuera_servicio'];
 
@@ -76,16 +78,7 @@ const FormCreateIncident = ({ onSubmit }) => {
         onChange={e => setIncidente({ ...incidente, tipo_incidente: e.target.value })}
       >
         {['mecanico', 'colision', 'software'].map(tipo => (
-          <MenuItem key={tipo} value={tipo}>{tipo}</MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        select fullWidth margin="normal" label="Estado"
-        value={incidente.estado}
-        onChange={e => setIncidente({ ...incidente, estado: e.target.value })}
-      >
-        {['creado', 'cerrado'].map(estado => (
-          <MenuItem key={estado} value={estado}>{estado}</MenuItem>
+          <MenuItem key={tipo} value={tipo}>{capitalizeFirst(tipo)}</MenuItem>
         ))}
       </TextField>
       <TextField
@@ -106,8 +99,8 @@ const FormCreateIncident = ({ onSubmit }) => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Nombre</TableCell>
               <TableCell>Modelo</TableCell>
+              <TableCell>Ubicación</TableCell>
               <TableCell>Acción</TableCell>
             </TableRow>
           </TableHead>
@@ -115,8 +108,8 @@ const FormCreateIncident = ({ onSubmit }) => {
             {robots.map(robot => (
               <TableRow key={robot.id}>
                 <TableCell>{robot.id}</TableCell>
-                <TableCell>{robot.nombre}</TableCell>
                 <TableCell>{robot.modelo}</TableCell>
+                <TableCell>{robot.ubicacion_actual}</TableCell>
                 <TableCell>
                   <Button onClick={() => agregarRobot(robot)}>Agregar</Button>
                 </TableCell>
@@ -141,7 +134,7 @@ const FormCreateIncident = ({ onSubmit }) => {
                     onChange={e => actualizarEstadoRobot(idx, e.target.value)}
                   >
                     {ESTADOS_ROBOT.map(est => (
-                      <MenuItem key={est} value={est}>{est}</MenuItem>
+                      <MenuItem key={est} value={est}>{capitalizeFirst(est,true)}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>

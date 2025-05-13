@@ -24,6 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import axiosInstance from '../../api/axiosInstance';
 import FormCreateIncident from './components/FormCreateIncident';
 import FormEditIncident from './components/FormEditIncident';
+import capitalizeFirst from '../utils/utils';
 
 const Incidentes = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,8 +131,8 @@ const Incidentes = () => {
                   <TableCell>{i.codigo}</TableCell>
                   <TableCell>{new Date(i.fecha).toLocaleDateString()}</TableCell>
                   <TableCell>{i.ubicacion}</TableCell>
-                  <TableCell>{i.tipo_incidente}</TableCell>
-                  <TableCell>{i.estado}</TableCell>
+                  <TableCell>{capitalizeFirst(i.tipo_incidente)}</TableCell>
+                  <TableCell>{capitalizeFirst(i.estado)}</TableCell>
                   <TableCell align="center">
                     <IconButton onClick={() => handleOpenDialog('view', i)}>
                       <VisibilityIcon />
@@ -215,7 +216,7 @@ const Incidentes = () => {
                 fullWidth
                 margin="normal"
                 label="Tipo de Incidente"
-                value={selected?.tipo_incidente || ''}
+                value={capitalizeFirst(selected?.tipo_incidente) || ''}
                 onChange={(e) => setSelected({ ...selected, tipo_incidente: e.target.value })}
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
@@ -232,7 +233,7 @@ const Incidentes = () => {
                 fullWidth
                 margin="normal"
                 label="Estado"
-                value={selected?.estado || ''}
+                value={capitalizeFirst(selected?.estado) || ''}
                 onChange={(e) => setSelected({ ...selected, estado: e.target.value })}
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
@@ -273,7 +274,12 @@ const Incidentes = () => {
                           <strong>ID:</strong> {robot.id}
                         </Typography>
                         <Typography variant="body1">
-                          <strong>Estado:</strong> {robot.estado.replace('_', ' ')}
+                          <strong>Estado:</strong>  {
+                          robot.estado.replace('_', ' ')==='en_reparacion' ? ('En reparación')
+                          : robot.estado.replace('_', ' ')==='fuera_servicio' ? ('Fuera de servicio')
+                          : robot.estado.replace('_', ' ')==='operativo' ? ('Operativo')
+                          : ('Desconocido')
+                          }
                         </Typography>
                       </Box>
                     );
