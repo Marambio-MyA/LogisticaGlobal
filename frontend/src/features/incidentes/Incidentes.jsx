@@ -22,6 +22,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddIcon from '@mui/icons-material/Add';
 import axiosInstance from '../../api/axiosInstance';
+import FormCreateIncident from './components/FormCreateIncident';
+import FormEditIncident from './components/FormEditIncident';
 
 const Incidentes = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +44,18 @@ const Incidentes = () => {
     }
   };
 
+  const deleteIncidente = async (id) => {
+    const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este incidente?');
+    if (!confirmar) return;
+
+    try {
+      await axiosInstance.delete(`/incidentes/${id}`);
+      await fetchIncidentes(); // Actualiza la lista
+    } catch (error) {
+      console.error('Error al eliminar el incidente:', error);
+    }
+  };
+
   useEffect(() => {
     fetchIncidentes();
   }, []);
@@ -55,6 +69,7 @@ const Incidentes = () => {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelected(null);
+    fetchIncidentes();
   };
 
   const filtered = incidentes.filter((i) =>
@@ -124,7 +139,7 @@ const Incidentes = () => {
                     <IconButton onClick={() => handleOpenDialog('edit', { ...i })}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => alert('Eliminar no implementado')}>
+                    <IconButton onClick={() => deleteIncidente(i.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -141,8 +156,7 @@ const Incidentes = () => {
           </Table>
         </Paper>
       )}
-
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
         <DialogTitle>
           {dialogMode === 'view'
             ? 'Detalle del Incidente'
@@ -150,77 +164,136 @@ const Incidentes = () => {
             ? 'Editar Incidente'
             : 'Nuevo Incidente'}
         </DialogTitle>
+
         <DialogContent>
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Código"
-            value={selected?.codigo || ''}
-            onChange={(e) => setSelected({ ...selected, codigo: e.target.value })}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Fecha"
-            type="date"
-            value={selected?.fecha?.split('T')[0] || ''}
-            onChange={(e) => setSelected({ ...selected, fecha: e.target.value })}
-            InputLabelProps={{ shrink: true }}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Hora"
-            type="time"
-            value={selected?.hora || ''}
-            onChange={(e) => setSelected({ ...selected, hora: e.target.value })}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Ubicación"
-            value={selected?.ubicacion || ''}
-            onChange={(e) => setSelected({ ...selected, ubicacion: e.target.value })}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Tipo de Incidente"
-            value={selected?.tipo_incidente || ''}
-            onChange={(e) => setSelected({ ...selected, tipo_incidente: e.target.value })}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Descripción"
-            value={selected?.descripcion || ''}
-            onChange={(e) => setSelected({ ...selected, descripcion: e.target.value })}
-            multiline
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Estado"
-            value={selected?.estado || ''}
-            onChange={(e) => setSelected({ ...selected, estado: e.target.value })}
-            InputProps={{ readOnly: dialogMode === 'view' }}
-          />
+          {dialogMode === 'create' ? (
+            <FormCreateIncident onSubmit={handleCloseDialog} />
+          ) : dialogMode === 'edit' ? (
+            <FormEditIncident
+              open={dialogOpen}
+              onClose={handleCloseDialog}
+              incidente={selected}
+            />
+          ) : (
+            <>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Código"
+                value={selected?.codigo || ''}
+                onChange={(e) => setSelected({ ...selected, codigo: e.target.value })}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Fecha"
+                type="date"
+                value={selected?.fecha?.split('T')[0] || ''}
+                onChange={(e) => setSelected({ ...selected, fecha: e.target.value })}
+                InputLabelProps={{ shrink: true }}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Hora"
+                type="time"
+                value={selected?.hora || ''}
+                onChange={(e) => setSelected({ ...selected, hora: e.target.value })}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Ubicación"
+                value={selected?.ubicacion || ''}
+                onChange={(e) => setSelected({ ...selected, ubicacion: e.target.value })}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Tipo de Incidente"
+                value={selected?.tipo_incidente || ''}
+                onChange={(e) => setSelected({ ...selected, tipo_incidente: e.target.value })}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Descripción"
+                value={selected?.descripcion || ''}
+                onChange={(e) => setSelected({ ...selected, descripcion: e.target.value })}
+                multiline
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Estado"
+                value={selected?.estado || ''}
+                onChange={(e) => setSelected({ ...selected, estado: e.target.value })}
+                InputProps={{ readOnly: dialogMode === 'view' }}
+              />
+
+              {dialogMode === 'view' && selected?.detalle_robots?.length > 0 && (
+                <Box mt={3}>
+                  <Typography variant="h6" gutterBottom>
+                    Robots Involucrados
+                  </Typography>
+                  {selected.detalle_robots.map((robot, index) => {
+                    let bgColor;
+                    switch (robot.estado) {
+                      case 'en_reparacion':
+                        bgColor = '#fbc02d'; // amarillo
+                        break;
+                      case 'fuera_servicio':
+                        bgColor = '#e53935'; // rojo
+                        break;
+                      case 'operativo':
+                        bgColor = '#43a047'; // verde
+                        break;
+                      default:
+                        bgColor = '#757575';
+                    }
+
+                    return (
+                      <Box
+                        key={index}
+                        sx={{
+                          backgroundColor: bgColor,
+                          color: '#fff',
+                          borderRadius: 2,
+                          padding: 2,
+                          mb: 2,
+                        }}
+                      >
+                        <Typography variant="body1">
+                          <strong>ID:</strong> {robot.id}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Estado:</strong> {robot.estado.replace('_', ' ')}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              )}
+            </>
+          )}
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cerrar</Button>
-          {dialogMode !== 'view' && (
+          {dialogMode === 'edit' && (
             <Button variant="contained" onClick={() => alert('Guardar no implementado')}>
               Guardar
             </Button>
           )}
         </DialogActions>
       </Dialog>
+
     </Box>
   );
 };
