@@ -136,7 +136,7 @@ const Incidentes = () => {
                   <TableCell>{new Date(i.fecha).toLocaleDateString()}</TableCell>
                   <TableCell>{i.ubicacion}</TableCell>
                   <TableCell>{capitalizeFirst(i.tipo_incidente)}</TableCell>
-                  <TableCell>{capitalizeFirst(i.estado)}</TableCell>
+                  <TableCell>{capitalizeFirst(i.estado,true)}</TableCell>
                   <TableCell align="center">
                     <IconButton onClick={() => handleOpenDialog('view', i)}>
                       <VisibilityIcon />
