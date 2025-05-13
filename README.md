@@ -46,4 +46,4 @@ npm install
 npm run dev
 ```
 
-Para mas informacion mirar la [Wiki](https://github.com/Marambio-MyA/LogisticaGlobal/wiki)
+Para mas informacion de la documentación mirar la [Wiki](https://github.com/Marambio-MyA/LogisticaGlobal/wiki)
