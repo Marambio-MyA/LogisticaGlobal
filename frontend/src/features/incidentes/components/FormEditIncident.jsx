@@ -137,7 +137,8 @@ import {
             onChange={(e) => handleFieldChange('estado', e.target.value)}
           >
             <MenuItem value="creado">Creado</MenuItem>
-            <MenuItem value="cerrado">Cerrado</MenuItem>
+            <MenuItem value="en_investigacion">En investigación</MenuItem>
+            <MenuItem value="resuelto">Resuelto</MenuItem>
           </TextField>
   
           {formData.detalle_robots.length > 0 && (

@@ -59,7 +59,7 @@ const Incident = sequelize.define("Incident",
             allowNull: false,
         },
         estado: {
-            type: DataTypes.ENUM("creado", "cerrado"),
+            type: DataTypes.ENUM("creado", "en_investigacion","resuelto"),
             allowNull: false,
             defaultValue: "creado",
         },

@@ -19,7 +19,6 @@ export const createIncident = async (req, res) => {
           estado_final_robot: robot.estado,
           trabajo_realizado: robot.trabajo_realizado || null,
           reportado_por: incident.creado_por || null,
-          fecha_cierre: robot.estado === "operativo" ? new Date() : null
         });
       }
       res.status(201).json(result);

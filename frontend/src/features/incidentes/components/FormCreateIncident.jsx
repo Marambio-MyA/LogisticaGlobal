@@ -63,17 +63,20 @@ const FormCreateIncident = ({ onSubmit }) => {
     <Box>
       <TextField
         fullWidth margin="normal" label="Ubicación"
+        required
         value={incidente.ubicacion}
         onChange={e => setIncidente({ ...incidente, ubicacion: e.target.value })}
       />
       <TextField
         fullWidth margin="normal" label="Descripción"
+        required
         value={incidente.descripcion}
         onChange={e => setIncidente({ ...incidente, descripcion: e.target.value })}
         multiline
       />
       <TextField
         select fullWidth margin="normal" label="Tipo de Incidente"
+        required
         value={incidente.tipo_incidente}
         onChange={e => setIncidente({ ...incidente, tipo_incidente: e.target.value })}
       >
@@ -84,6 +87,7 @@ const FormCreateIncident = ({ onSubmit }) => {
       <TextField
         fullWidth margin="normal" label="Fecha" type="date"
         value={incidente.fecha}
+        required
         onChange={e => setIncidente({ ...incidente, fecha: e.target.value })}
         InputLabelProps={{ shrink: true }}
       />
@@ -91,6 +95,7 @@ const FormCreateIncident = ({ onSubmit }) => {
         fullWidth margin="normal" label="Hora" type="time"
         value={incidente.hora}
         onChange={e => setIncidente({ ...incidente, hora: e.target.value })}
+        required
       />
 
       <Typography variant="h6" mt={3}>Robots disponibles</Typography>

@@ -61,6 +61,7 @@ const Login = () => {
           />
           <TextField
             fullWidth
+            required
             label="Contraseña"
             variant="outlined"
             margin="normal"
