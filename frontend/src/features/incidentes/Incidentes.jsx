@@ -61,6 +61,10 @@ const Incidentes = () => {
     fetchIncidentes();
   }, []);
 
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
+
   const handleOpenDialog = (mode, incidente = null) => {
     setDialogMode(mode);
     setSelected(incidente);
@@ -275,9 +279,9 @@ const Incidentes = () => {
                         </Typography>
                         <Typography variant="body1">
                           <strong>Estado:</strong>  {
-                          robot.estado.replace('_', ' ')==='en_reparacion' ? ('En reparación')
-                          : robot.estado.replace('_', ' ')==='fuera_servicio' ? ('Fuera de servicio')
-                          : robot.estado.replace('_', ' ')==='operativo' ? ('Operativo')
+                          robot.estado==='en_reparacion' ? ('En reparación')
+                          : robot.estado==='fuera_servicio' ? ('Fuera de servicio')
+                          : robot.estado==='operativo' ? ('Operativo')
                           : ('Desconocido')
                           }
                         </Typography>
