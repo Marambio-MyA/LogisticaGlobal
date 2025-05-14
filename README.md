@@ -31,7 +31,7 @@ JWT_SECRET = JWT_SECRET
 Estas variables son necesarias para establecer la conexión a la base de datos, configurar el puerto del servidor. Una vez creado, ejecutar estos comandos para iniciar al servidor.
 ```
 npm install
-node index.js
+npm run start
 ```
 ### Frontend
 
