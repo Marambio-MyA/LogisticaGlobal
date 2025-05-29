@@ -8,7 +8,7 @@ function getTimestamp() {
   return `[${date} ${time}]`;
 }
 
-
+// Casos de prueba para el inicio de sesión
 const loginCases = [
   {
     name: 'Email incorrecto',
@@ -51,12 +51,10 @@ const loginCases = [
 (async () => {
   const browser = await puppeteer.launch({ headless: 'new' });
 
-  const chalk = require('chalk'); // Asegúrate de tener chalk@4 instalado
-
   let passed = 0;
   let failed = 0;
 
-// Dentro de tu bucle for
+// Iterar sobre los casos de prueba
 for (let i = 0; i < loginCases.length; i++) {
   const testCase = loginCases[i];
   const caseNumber = i + 1;
@@ -66,7 +64,7 @@ for (let i = 0; i < loginCases.length; i++) {
 
   await page.goto('https://logisticaglobal-frontend-production.up.railway.app');
 
-
+  // Introducir los datos de inicio de sesión
   await page.waitForSelector('input[name="email"]');
   await page.evaluate(() => document.querySelector('input[name="email"]').value = '');
   await page.type('input[name="email"]', testCase.email);
@@ -81,6 +79,7 @@ for (let i = 0; i < loginCases.length; i++) {
     if (btn) btn.click();
   });
 
+  // Esperar a que la navegación ocurra o falle
   try {
     await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 5000 });
   } catch (e) {
@@ -89,6 +88,7 @@ for (let i = 0; i < loginCases.length; i++) {
 
   const loginExitoso = page.url().includes('/dashboard');
 
+  // Verificar el resultado del inicio de sesión
   if (testCase.expectSuccess && loginExitoso) {
     console.log(`${getTimestamp()}  ` + chalk.green('✔ Login exitoso y redirección detectada'));
     passed++;
