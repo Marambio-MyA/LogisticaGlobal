@@ -49,7 +49,7 @@ const loginCases = [
 ];
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: 'new' });
 
   const chalk = require('chalk'); // Asegúrate de tener chalk@4 instalado
 
