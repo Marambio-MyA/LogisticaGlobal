@@ -1,0 +1,69 @@
+const { getTimestamp } = require('./utils/common');
+const chalk = require('chalk');
+
+
+// Muestra por consola el resumen de un conjunto de tests individuales.
+function printResults(label, passed, failed) {
+  console.log(`${getTimestamp()} [Resumen ${label}] expected cases: ` + chalk.green(passed) + ` | unexpected cases: ` + chalk.red(failed) + `\n`);
+}
+
+
+// Muestra por consola el resumen global de todos los tests que se han ejecutado.
+function printGlobalResults(totalPassed, totalFailed) {
+  console.log('\n===============TEST SESSION RESULTS===============');
+  console.log(`${getTimestamp()} Correctly expected cases:   ` + chalk.green(totalPassed));
+  console.log(`${getTimestamp()} Cases with unexpected results: ` + chalk.red(totalFailed));
+  console.log('==================================================\n');
+}
+
+(async () => {
+  console.log('\n===================== STARTING ALL TESTS =====================\n');
+
+  try {
+    // Totales globales (acumularemos resultados de cada feature aquí)
+    let totalPassed = 0;
+    let totalFailed = 0;
+
+    // 1) Ejecutar tests de login
+    const runLoginTests = require('./features/login-test');
+    const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
+    printResults('login-test', loginPassed, loginFailed);
+    totalPassed += loginPassed;
+    totalFailed += loginFailed;
+
+    // Si hubo fallos en login, detenemos aquí mismo y mostramos resumen global parcial
+    if (loginFailed > 0) {
+      console.error(`${getTimestamp()} Some login tests failed. The following tests are stopped.\n`);
+      printGlobalResults(totalPassed, totalFailed);
+      process.exit(1);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 2) Si el login fue 100% exitoso, continuar con el siguiente feature
+    // (ejemplo: checkout-test, settings-test, etc.)
+    // ─────────────────────────────────────────────────────────────
+    // Por ejemplo, si mañana añades `features/checkout-test.js`, lo harías así:
+
+    // const runCheckoutTests = require('./features/checkout-test');
+    // const { passed: checkoutPassed, failed: checkoutFailed } = await runCheckoutTests();
+    // printResults('checkout-test', checkoutPassed, checkoutFailed);
+    // totalPassed += checkoutPassed;
+    // totalFailed += checkoutFailed;
+    //
+    // if (checkoutFailed > 0) {
+    //   console.error('🔴 Algunos tests de checkout fallaron. Se detiene la ejecución aquí.\n');
+    //   printGlobalResults(totalPassed, totalFailed);
+    //   process.exit(1);
+    // }
+
+    // (Si agregas más tests, repite el mismo patrón: ejecutar → printResults → acumular → si fail > 0, printGlobalResults y exit)
+
+    // Mostrar resumen global final
+    printGlobalResults(totalPassed, totalFailed);
+    process.exit(0);
+
+  } catch (err) {
+    console.error('\n Error executing some test:\n', err, '\n');
+    process.exit(1);
+  }
+})();
