@@ -1,0 +1,51 @@
+name: Puppeteer Frontend Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --- Construir frontend ---
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend with test env
+        working-directory: ./frontend
+        env:
+          VITE_API_HOST: ${{ secrets.VITE_API_HOST }}
+          VITE_ENV: ${{ secrets.VITE_ENV }}
+        run: npm run build -- --mode test
+
+      # --- Servir frontend en background ---
+      - name: Serve frontend build (background)
+        working-directory: ./frontend
+        run: npx serve -s dist -l 5000 &
+
+      - name: Wait for frontend to be ready
+        run: npx wait-on http://localhost:5000
+
+      # --- Ejecutar tests Puppeteer ---
+      - name: Run Puppeteer tests
+        working-directory: ./test
+        env:
+          TEST_URL: ${{ secrets.TEST_URL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          npm install
+          node main-test.js

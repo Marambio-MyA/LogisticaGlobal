@@ -6,9 +6,9 @@ const chalk = require('chalk');
 const { getTimestamp } = require('../utils/common');
 
 // Variables de entorno
-const URL = process.env.URL;
-const SUCCESS_EMAIL = process.env.EMAIL;
-const SUCCESS_PASSWORD = process.env.PASSWORD;
+const URL = process.env.TEST_URL;
+const SUCCESS_EMAIL = process.env.TEST_EMAIL;
+const SUCCESS_PASSWORD = process.env.TEST_PASSWORD;
 
 /**
  * Cada test case indica:
@@ -60,7 +60,10 @@ const loginCases = [
  * la cantidad de tests pasados y fallidos, sin hacer throw.
  */
 async function runLoginTests() {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: true,
+  });
   let passed = 0;
   let failed = 0;
 

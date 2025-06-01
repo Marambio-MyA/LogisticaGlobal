@@ -7,7 +7,9 @@ const env = import.meta.env.VITE_ENV;
 const baseURL =
   env === 'production'
     ? `https://${host}/api`
-    : `http://${host}:${port}/api`;
+    : env === 'testing'
+      ? `https://${host}/api` // puedes usar host sin puerto
+      : `http://${host}:${port}/api`;
 
 const axiosInstance = axios.create({ baseURL });
 
