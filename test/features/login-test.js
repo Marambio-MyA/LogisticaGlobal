@@ -112,6 +112,7 @@ async function runLoginTests() {
 
     // Validación
     if (testCase.expectSuccess && loginExitoso) {
+      console.log(`${getTimestamp()} ` + chalk.green('✔ Resultado esperado: login exitoso.'));
       // Hacer click en "Cerrar sesión" cuando el login sea exitoso
       await page.evaluate(() => {
         const btn = Array.from(document.querySelectorAll('button'))
