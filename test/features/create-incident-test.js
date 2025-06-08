@@ -3,11 +3,7 @@
 require('dotenv').config();
 const puppeteer = require('puppeteer');
 const chalk = require('chalk');
-const { getTimestamp } = require('../utils/common');
-
-const URL = process.env.TEST_URL;
-const SUCCESS_EMAIL = process.env.TEST_EMAIL;
-const SUCCESS_PASSWORD = process.env.TEST_PASSWORD;
+const { getTimestamp, login, navagation_to_incidents } = require('../utils/common');
 
 const INCIDENT_LOCATION = 'Sala de servidores - Piso 3';
 const INCIDENT_DESCRIPTION = 'El servidor principal presenta sobrecalentamiento constante';
@@ -27,29 +23,11 @@ async function runIncidentTest() {
   try {
     // Iniciar sesión en la aplicación
     console.log(`${getTimestamp()} ▶ [create-incident-test] Iniciando sesión...`);
-    await page.goto(URL);
-
-    await page.waitForSelector('input[name="email"]');
-    await page.type('input[name="email"]', SUCCESS_EMAIL);
-
-    await page.waitForSelector('input[type="password"]');
-    await page.type('input[type="password"]', SUCCESS_PASSWORD);
-
-    // Click en botón "Entrar"
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button'))
-        .find(b => b.textContent.trim() === 'Entrar');
-      if (btn) btn.click();
-    });
+    await login(page);
 
     // Dirigir a la página de Incidentes
     console.log(`${getTimestamp()} ▶ [create-incident-test] Navegando a Incidentes...`);
-    await page.waitForSelector('ul.MuiList-root');
-    await page.evaluate(() => {
-      const menu = [...document.querySelectorAll('li')]
-        .find(li => li.textContent.trim() === 'Incidentes');
-      menu?.click();
-    });
+    await navagation_to_incidents(page);
 
     // Contar los incidentes existentes
     await page.waitForSelector('tbody.MuiTableBody-root tr');

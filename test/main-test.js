@@ -24,6 +24,7 @@ function printGlobalResults(totalPassed, totalFailed) {
     let totalPassed = 0;
     let totalFailed = 0;
   
+    
     // 1) Ejecutar tests de login
     const runLoginTests = require('./features/login-test');
     const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
@@ -37,7 +38,7 @@ function printGlobalResults(totalPassed, totalFailed) {
       printGlobalResults(totalPassed, totalFailed);
       process.exit(1);
     }
-    
+
     // 2) Ejecutar tests de creación de incidente
     const runCreateIncidentTests = require('./features/create-incident-test');
     const { passed: createIncidentPassed, failed: createIncidentFailed } = await runCreateIncidentTests();
@@ -45,13 +46,29 @@ function printGlobalResults(totalPassed, totalFailed) {
     totalPassed += createIncidentPassed;
     totalFailed += createIncidentFailed;
     
-    // 3) Ejecutar tests de actualización de incidente
+    // 3) Ejecutar tests de visualización de incidente
+    const runViewIncidentTests = require('./features/view-incident-test');
+    const { passed: viewIncidentPassed, failed: viewIncidentFailed } = await runViewIncidentTests();
+    printResults('view-incident-test', viewIncidentPassed, viewIncidentFailed);
+    totalPassed += viewIncidentPassed;
+    totalFailed += viewIncidentFailed;
+
+    
+    // 4) Ejecutar tests de actualización de incidente
     const runUpdateIncidentTests = require('./features/update-incident-test');
     const { passed: updateIncidentPassed, failed: updateIncidentFailed } = await runUpdateIncidentTests();
     printResults('update-incident-test', updateIncidentPassed, updateIncidentFailed);
     totalPassed += updateIncidentPassed;
     totalFailed += updateIncidentFailed;
+    
 
+    // 5) Ejecutar tests de eliminación de incidente
+    const runDeleteIncidentTests = require('./features/delete-incident-test');
+    const { passed: deleteIncidentPassed, failed: deleteIncidentFailed } = await runDeleteIncidentTests();
+    printResults('delete-incident-test', deleteIncidentPassed, deleteIncidentFailed);
+    totalPassed += deleteIncidentPassed;
+    totalFailed += deleteIncidentFailed;
+    
     // Mostrar resumen global final
     printGlobalResults(totalPassed, totalFailed);
     process.exit(0);

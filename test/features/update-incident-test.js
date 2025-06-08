@@ -3,12 +3,8 @@
 require('dotenv').config();
 const puppeteer = require('puppeteer');
 const chalk = require('chalk');
-const { getTimestamp } = require('../utils/common');
+const { getTimestamp, login, navagation_to_incidents } = require('../utils/common');
 
-// Variables de entorno
-const URL = process.env.TEST_URL;
-const SUCCESS_EMAIL = process.env.TEST_EMAIL;
-const SUCCESS_PASSWORD = process.env.TEST_PASSWORD;
 
 // Variables de prueba
 const NUEVA_UBICACION = 'Zona restringida B';
@@ -30,28 +26,11 @@ async function runUpdateIncidentTest() {
   try {
     // 1. Iniciar sesión
     console.log(`${getTimestamp()} ▶ [update-incident-test] Iniciando sesión...`);
-    await page.goto(URL);
-
-    await page.waitForSelector('input[name="email"]');
-    await page.type('input[name="email"]', SUCCESS_EMAIL);
-
-    await page.waitForSelector('input[type="password"]');
-    await page.type('input[type="password"]', SUCCESS_PASSWORD);
-
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button'))
-        .find(b => b.textContent.trim() === 'Entrar');
-      if (btn) btn.click();
-    });
+    await login(page);
 
     // 2. Navegar a Incidentes
     console.log(`${getTimestamp()} ▶ [update-incident-test] Navegando a Incidentes...`);
-    await page.waitForSelector('ul.MuiList-root');
-    await page.evaluate(() => {
-      const menu = [...document.querySelectorAll('li')]
-        .find(li => li.textContent.trim() === 'Incidentes');
-      menu?.click();
-    });
+    await navagation_to_incidents(page);
 
     // 3. Esperar carga de tabla
     await page.waitForSelector('tbody.MuiTableBody-root tr', { visible: true });
