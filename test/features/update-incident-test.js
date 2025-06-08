@@ -19,7 +19,11 @@ const ROBOT_ID = 2;
 const NUEVO_ESTADO_ROBOT = 'en_reparacion';
 
 async function runUpdateIncidentTest() {
-  const browser = await puppeteer.launch({ headless: "new", slowMo: 50 });
+   const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true,
+        slowMo: 50,
+      });
   const page = await browser.newPage();
   let testPassed = false;
 
@@ -71,7 +75,7 @@ async function runUpdateIncidentTest() {
 
     // Ubicación
     console.log(`${getTimestamp()} ▶ [update-incident-test] Modificando ubicación...`);
-    await page.$eval('[data-testid="edit-ubicacion-input"] input', (input, value) => {
+    await page.$eval('[input-id="edit-ubicacion-input"] input', (input, value) => {
       input.focus();
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
       setter.call(input, value);
@@ -80,13 +84,13 @@ async function runUpdateIncidentTest() {
 
     // Tipo de incidente
     console.log(`${getTimestamp()} ▶ [update-incident-test] Seleccionando Tipo de Incidente...`);
-    await page.click('[data-testid="edit-tipo-incidente-select"]');
-    await page.waitForSelector(`[data-testid="edit-tipo-option-${NUEVO_TIPO}"]`);
-    await page.click(`[data-testid="edit-tipo-option-${NUEVO_TIPO}"]`);
+    await page.click('[input-id="edit-tipo-incidente-select"]');
+    await page.waitForSelector(`[input-id="edit-tipo-option-${NUEVO_TIPO}"]`);
+    await page.click(`[input-id="edit-tipo-option-${NUEVO_TIPO}"]`);
 
     // Descripción
     console.log(`${getTimestamp()} ▶ [update-incident-test] Modificando descripción...`);
-    await page.$eval('[data-testid="edit-descripcion-input"] textarea', (textarea, value) => {
+    await page.$eval('[input-id="edit-descripcion-input"] textarea', (textarea, value) => {
       textarea.focus();
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(textarea), 'value')?.set;
       if (setter) {
@@ -97,15 +101,15 @@ async function runUpdateIncidentTest() {
 
     // Estado del incidente
     console.log(`${getTimestamp()} ▶ [update-incident-test] Seleccionando Estado del Incidente...`);
-    await page.click('[data-testid="edit-estado-select"]');
-    await page.waitForSelector(`[data-testid="edit-estado-opcion-${NUEVO_ESTADO_INCIDENTE}"]`);
-    await page.click(`[data-testid="edit-estado-opcion-${NUEVO_ESTADO_INCIDENTE}"]`);
+    await page.click('[input-id="edit-estado-select"]');
+    await page.waitForSelector(`[input-id="edit-estado-opcion-${NUEVO_ESTADO_INCIDENTE}"]`);
+    await page.click(`[input-id="edit-estado-opcion-${NUEVO_ESTADO_INCIDENTE}"]`);
 
     // Estado del robot
     console.log(`${getTimestamp()} ▶ [update-incident-test] Seleccionando Estado del Robot ID ${ROBOT_ID}...`);
-    await page.click(`[data-testid="edit-estado-robot-${ROBOT_ID}"]`);
-    await page.waitForSelector(`[data-testid="edit-estado-opcion-${ROBOT_ID}-${NUEVO_ESTADO_ROBOT}"]`);
-    await page.click(`[data-testid="edit-estado-opcion-${ROBOT_ID}-${NUEVO_ESTADO_ROBOT}"]`);
+    await page.click(`[input-id="edit-estado-robot-${ROBOT_ID}"]`);
+    await page.waitForSelector(`[input-id="edit-estado-opcion-${ROBOT_ID}-${NUEVO_ESTADO_ROBOT}"]`);
+    await page.click(`[input-id="edit-estado-opcion-${ROBOT_ID}-${NUEVO_ESTADO_ROBOT}"]`);
 
     // 6. Confirmar y enviar
     console.log(`${getTimestamp()} ▶ [update-incident-test] Enviando formulario...`);
@@ -114,8 +118,8 @@ async function runUpdateIncidentTest() {
       await dialog.accept();
     });
 
-    await page.waitForSelector('[data-testid="edit-guardar-cambios-btn"]', { visible: true });
-    await page.click('[data-testid="edit-guardar-cambios-btn"]');
+    await page.waitForSelector('[button-id="edit-guardar-cambios-btn"]', { visible: true });
+    await page.click('[button-id="edit-guardar-cambios-btn"]');
 
     console.log(`${getTimestamp()} ` + chalk.green('✔ Incidente editado y enviado correctamente'));
     testPassed = true;

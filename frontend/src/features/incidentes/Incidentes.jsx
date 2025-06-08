@@ -87,7 +87,7 @@ const Incidentes = () => {
         <Typography variant="h4">Incidentes</Typography>
         <Button
           variant="contained"
-          data-testid="nuevo-incidente-btn"
+          id="nuevo-incidente-btn"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog('create', {
             codigo: '',

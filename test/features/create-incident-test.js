@@ -16,7 +16,11 @@ const ROBOT_ID = 2;
 const ESTADO_DESEADO = 'fuera_servicio';
 
 async function runIncidentTest() {
-  const browser = await puppeteer.launch({ headless: "new" , slowMo: 50});
+  const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+      slowMo: 50,
+    });
   const page = await browser.newPage();
   let testPassed = false;
 
@@ -53,16 +57,16 @@ async function runIncidentTest() {
 
     // Boton "Nuevo Incidente"
     console.log(`${getTimestamp()} ▶ [create-incident-test] Esperando botón 'Nuevo Incidente'...`);
-    await page.waitForSelector('[data-testid="nuevo-incidente-btn"]', {
+    await page.waitForSelector('[id="nuevo-incidente-btn"]', {
       visible: true,
       timeout: 5000,
     });
     console.log(`${getTimestamp()} ▶ [create-incident-test] Haciendo clic en 'Nuevo Incidente' y abrir el modal...`);
-    await page.click('[data-testid="nuevo-incidente-btn"]');
+    await page.click('[id="nuevo-incidente-btn"]');
 
     // Rellenar la ubicación
     console.log(`${getTimestamp()} ▶ [create-incident-test] Rellenando Ubicación...`);
-    await page.$eval('[data-testid="ubicacion-input"] input', (input, value) => {
+    await page.$eval('[input-id="ubicacion-input"] input', (input, value) => {
     input.focus();
     const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
     setter.call(input, value);
@@ -71,9 +75,9 @@ async function runIncidentTest() {
 
     // Rellenar la descripción
     console.log(`${getTimestamp()} ▶ [create-incident-test] Rellenando Descripción...`);
-    await page.waitForSelector('[data-testid="descripcion-input"] textarea', { visible: true });
+    await page.waitForSelector('[input-id="descripcion-input"] textarea', { visible: true });
 
-    await page.$eval('[data-testid="descripcion-input"] textarea', (textarea, value) => {
+    await page.$eval('[input-id="descripcion-input"] textarea', (textarea, value) => {
       textarea.focus();
       const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(textarea), 'value').set;
       setter.call(textarea, value);
@@ -82,28 +86,28 @@ async function runIncidentTest() {
 
     // Seleccionar el tipo de incidente
     console.log(`${getTimestamp()} ▶ [create-incident-test] Seleccionando Tipo de Incidente...`);
-    await page.click('[data-testid="tipo-incidente-select"]');
-    await page.waitForSelector(`[data-testid="tipo-option-${INCIDENT_TYPE}"]`, { visible: true });
-    await page.click(`[data-testid="tipo-option-${INCIDENT_TYPE}"]`);
+    await page.click('[input-id="tipo-incidente-select"]');
+    await page.waitForSelector(`[input-id="tipo-option-${INCIDENT_TYPE}"]`, { visible: true });
+    await page.click(`[input-id="tipo-option-${INCIDENT_TYPE}"]`);
 
     
     
     // Hacer clic en el botón AGREGAR del robot
     console.log(`${getTimestamp()} ▶ [create-incident-test] Agregando robot ${ROBOT_ID}...`);
-    await page.waitForSelector(`[data-testid="agregar-robot-${ROBOT_ID}"]`, { visible: true });
-    await page.click(`[data-testid="agregar-robot-${ROBOT_ID}"]`);
+    await page.waitForSelector(`[input-id="agregar-robot-${ROBOT_ID}"]`, { visible: true });
+    await page.click(`[input-id="agregar-robot-${ROBOT_ID}"]`);
 
-    await page.waitForSelector(`[data-testid="estado-robot-${ROBOT_ID}"]`, { visible: true });
-    await page.click(`[data-testid="estado-robot-${ROBOT_ID}"]`);
+    await page.waitForSelector(`[input-id="estado-robot-${ROBOT_ID}"]`, { visible: true });
+    await page.click(`[input-id="estado-robot-${ROBOT_ID}"]`);
 
 
     // Seleccionar el estado del robot
     console.log(`${getTimestamp()} ▶ [create-incident-test] Seleccionando estado "${ESTADO_DESEADO}"...`);
     await page.waitForSelector(
-      `[data-testid="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`,
+      `[input-id="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`,
       { visible: true }
     );
-    await page.click(`[data-testid="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`);
+    await page.click(`[input-id="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`);
 
     // Confirmar el diálogo de creación de incidente
     console.log(`${getTimestamp()} ▶ [create-incident-test] Preparando confirmación del diálogo...`);
@@ -116,8 +120,8 @@ async function runIncidentTest() {
     page.once('dialog', dialogHandler);
 
     console.log(`${getTimestamp()} ▶ [create-incident-test] Enviando formulario...`);
-    await page.waitForSelector('[data-testid="crear-incidente-btn"]', { visible: true });
-    await page.click('[data-testid="crear-incidente-btn"]');
+    await page.waitForSelector('[button-id="crear-incidente-btn"]', { visible: true });
+    await page.click('[button-id="crear-incidente-btn"]');
 
 
     // Contar incidentes después

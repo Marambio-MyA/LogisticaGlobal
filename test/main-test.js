@@ -23,28 +23,28 @@ function printGlobalResults(totalPassed, totalFailed) {
     // Totales globales (acumularemos resultados de cada feature aquí)
     let totalPassed = 0;
     let totalFailed = 0;
-    /*
+  
     // 1) Ejecutar tests de login
     const runLoginTests = require('./features/login-test');
     const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
     printResults('login-test', loginPassed, loginFailed);
     totalPassed += loginPassed;
     totalFailed += loginFailed;
-
+    
     // Si hubo fallos en login, detenemos aquí mismo y mostramos resumen global parcial
     if (loginFailed > 0) {
       console.error(`${getTimestamp()} Some login tests failed. The following tests are stopped.\n`);
       printGlobalResults(totalPassed, totalFailed);
       process.exit(1);
     }
-
+    
     // 2) Ejecutar tests de creación de incidente
     const runCreateIncidentTests = require('./features/create-incident-test');
     const { passed: createIncidentPassed, failed: createIncidentFailed } = await runCreateIncidentTests();
     printResults('create-incident-test', createIncidentPassed, createIncidentFailed);
     totalPassed += createIncidentPassed;
     totalFailed += createIncidentFailed;
-    */
+    
     // 3) Ejecutar tests de actualización de incidente
     const runUpdateIncidentTests = require('./features/update-incident-test');
     const { passed: updateIncidentPassed, failed: updateIncidentFailed } = await runUpdateIncidentTests();

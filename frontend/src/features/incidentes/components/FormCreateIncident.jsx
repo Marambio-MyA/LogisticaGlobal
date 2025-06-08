@@ -66,7 +66,7 @@ const FormCreateIncident = ({ onSubmit }) => {
         required
         value={incidente.ubicacion}
         onChange={e => setIncidente({ ...incidente, ubicacion: e.target.value })}
-        slotProps={{ input: { 'data-testid': 'ubicacion-input' } }}
+        slotProps={{ input: { 'input-id': 'ubicacion-input' } }}
       />
       <TextField
         fullWidth margin="normal" label="Descripción"
@@ -74,17 +74,17 @@ const FormCreateIncident = ({ onSubmit }) => {
         value={incidente.descripcion}
         onChange={e => setIncidente({ ...incidente, descripcion: e.target.value })}
         multiline
-        slotProps={{ input: { 'data-testid': 'descripcion-input' } }}
+        slotProps={{ input: { 'input-id': 'descripcion-input' } }}
       />
       <TextField
         select fullWidth margin="normal" label="Tipo de Incidente"
         required
         value={incidente.tipo_incidente}
         onChange={e => setIncidente({ ...incidente, tipo_incidente: e.target.value })}
-        slotProps={{ select: { 'data-testid': 'tipo-incidente-select' }}}
+        slotProps={{ select: { 'input-id': 'tipo-incidente-select' }}}
       >
         {['mecanico', 'colision', 'software'].map(tipo => (
-          <MenuItem key={tipo} value={tipo} data-testid={`tipo-option-${tipo}`}>{capitalizeFirst(tipo)}</MenuItem>
+          <MenuItem key={tipo} value={tipo} input-id={`tipo-option-${tipo}`}>{capitalizeFirst(tipo)}</MenuItem>
         ))}
       </TextField>
       <TextField
@@ -119,7 +119,7 @@ const FormCreateIncident = ({ onSubmit }) => {
                 <TableCell>{robot.modelo}</TableCell>
                 <TableCell>{robot.ubicacion_actual}</TableCell>
                 <TableCell>
-                  <Button onClick={() => agregarRobot(robot)} data-testid={`agregar-robot-${robot.id}`}>Agregar</Button>
+                  <Button onClick={() => agregarRobot(robot)} input-id={`agregar-robot-${robot.id}`}>Agregar</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -140,10 +140,10 @@ const FormCreateIncident = ({ onSubmit }) => {
                     value={r.estado}
                     label="Estado"
                     onChange={e => actualizarEstadoRobot(idx, e.target.value)}
-                    renderValue={selected => (<div data-testid={`estado-robot-${r.id}`}>{capitalizeFirst(selected, true)}</div>)}
+                    renderValue={selected => (<div input-id={`estado-robot-${r.id}`}>{capitalizeFirst(selected, true)}</div>)}
                   >
                     {ESTADOS_ROBOT.map(est => (
-                      <MenuItem key={est} value={est} data-testid={`estado-opcion-${r.id}-${est}`}>{capitalizeFirst(est, true)}</MenuItem>
+                      <MenuItem key={est} value={est} input-id={`estado-opcion-${r.id}-${est}`}>{capitalizeFirst(est, true)}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -155,7 +155,7 @@ const FormCreateIncident = ({ onSubmit }) => {
       )}
 
       <Box mt={3}>
-        <Button variant="contained" onClick={handleSubmit} data-testid="crear-incidente-btn">
+        <Button variant="contained" onClick={handleSubmit} button-id="crear-incidente-btn">
           Crear Incidente
         </Button>
       </Box>
