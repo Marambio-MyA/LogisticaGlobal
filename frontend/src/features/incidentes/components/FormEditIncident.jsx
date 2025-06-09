@@ -107,6 +107,7 @@ import {
             label="Ubicación"
             value={formData.ubicacion || ''}
             onChange={(e) => handleFieldChange('ubicacion', e.target.value)}
+            slotProps={{ input: { 'input-id': 'edit-ubicacion-input' } }}
           />
           <TextField
             select
@@ -115,10 +116,11 @@ import {
             label="Tipo de Incidente"
             value={formData.tipo_incidente || ''}
             onChange={(e) => handleFieldChange('tipo_incidente', e.target.value)}
+            slotProps={{ select: { 'input-id': 'edit-tipo-incidente-select' } }}
           >
-            <MenuItem value="mecanico">Mecánico</MenuItem>
-            <MenuItem value="colision">Colisión</MenuItem>
-            <MenuItem value="software">Software</MenuItem>
+            <MenuItem value="mecanico" input-id="edit-tipo-option-mecanico">Mecánico</MenuItem>
+            <MenuItem value="colision" input-id="edit-tipo-option-colision">Colisión</MenuItem>
+            <MenuItem value="software" input-id="edit-tipo-option-software">Software</MenuItem>
           </TextField>
           <TextField
             fullWidth
@@ -127,6 +129,7 @@ import {
             value={formData.descripcion || ''}
             onChange={(e) => handleFieldChange('descripcion', e.target.value)}
             multiline
+            slotProps={{ input: { 'input-id': 'edit-descripcion-input' } }}
           />
           <TextField
             select
@@ -135,10 +138,11 @@ import {
             label="Estado"
             value={formData.estado || ''}
             onChange={(e) => handleFieldChange('estado', e.target.value)}
+            slotProps={{ select: { 'input-id': 'edit-estado-select' } }}
           >
-            <MenuItem value="creado">Creado</MenuItem>
-            <MenuItem value="en_investigacion">En investigación</MenuItem>
-            <MenuItem value="resuelto">Resuelto</MenuItem>
+            <MenuItem value="creado" input-id="edit-estado-opcion-creado" >Creado</MenuItem>
+            <MenuItem value="en_investigacion" input-id="edit-estado-opcion-en_investigacion" >En investigación</MenuItem>
+            <MenuItem value="resuelto" input-id="edit-estado-opcion-resuelto">Resuelto</MenuItem>
           </TextField>
   
           {formData.detalle_robots.length > 0 && (
@@ -164,10 +168,15 @@ import {
                             value={robot.estado}
                             label="Estado"
                             onChange={(e) => handleRobotStateChange(index, e.target.value)}
+                            renderValue={(selected) => (
+                              <div input-id={`edit-estado-robot-${robot.id}`}>
+                                {selected.charAt(0).toUpperCase() + selected.slice(1).replace('_', ' ')}
+                              </div>
+                            )}
                           >
-                            <MenuItem value="operativo">Operativo</MenuItem>
-                            <MenuItem value="en_reparacion">En reparación</MenuItem>
-                            <MenuItem value="fuera_servicio">Fuera de servicio</MenuItem>
+                            <MenuItem value="operativo" input-id={`edit-estado-opcion-${robot.id}-operativo`}>Operativo</MenuItem>
+                            <MenuItem value="en_reparacion" input-id={`edit-estado-opcion-${robot.id}-en_reparacion`}>En reparación</MenuItem>
+                            <MenuItem value="fuera_servicio" input-id={`edit-estado-opcion-${robot.id}-fuera_servicio`}>Fuera de servicio</MenuItem>
                           </Select>
                         </FormControl>
                       </TableCell>
@@ -180,7 +189,7 @@ import {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={handleSubmit} button-id="edit-guardar-cambios-btn">
             Guardar Cambios
           </Button>
         </DialogActions>

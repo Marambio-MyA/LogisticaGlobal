@@ -23,14 +23,15 @@ function printGlobalResults(totalPassed, totalFailed) {
     // Totales globales (acumularemos resultados de cada feature aquí)
     let totalPassed = 0;
     let totalFailed = 0;
-
+  
+    
     // 1) Ejecutar tests de login
     const runLoginTests = require('./features/login-test');
     const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
     printResults('login-test', loginPassed, loginFailed);
     totalPassed += loginPassed;
     totalFailed += loginFailed;
-
+    
     // Si hubo fallos en login, detenemos aquí mismo y mostramos resumen global parcial
     if (loginFailed > 0) {
       console.error(`${getTimestamp()} Some login tests failed. The following tests are stopped.\n`);
@@ -38,26 +39,36 @@ function printGlobalResults(totalPassed, totalFailed) {
       process.exit(1);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // 2) Si el login fue 100% exitoso, continuar con el siguiente feature
-    // (ejemplo: checkout-test, settings-test, etc.)
-    // ─────────────────────────────────────────────────────────────
-    // Por ejemplo, si mañana añades `features/checkout-test.js`, lo harías así:
+    // 2) Ejecutar tests de creación de incidente
+    const runCreateIncidentTests = require('./features/create-incident-test');
+    const { passed: createIncidentPassed, failed: createIncidentFailed } = await runCreateIncidentTests();
+    printResults('create-incident-test', createIncidentPassed, createIncidentFailed);
+    totalPassed += createIncidentPassed;
+    totalFailed += createIncidentFailed;
+    
+    // 3) Ejecutar tests de visualización de incidente
+    const runViewIncidentTests = require('./features/view-incident-test');
+    const { passed: viewIncidentPassed, failed: viewIncidentFailed } = await runViewIncidentTests();
+    printResults('view-incident-test', viewIncidentPassed, viewIncidentFailed);
+    totalPassed += viewIncidentPassed;
+    totalFailed += viewIncidentFailed;
 
-    // const runCheckoutTests = require('./features/checkout-test');
-    // const { passed: checkoutPassed, failed: checkoutFailed } = await runCheckoutTests();
-    // printResults('checkout-test', checkoutPassed, checkoutFailed);
-    // totalPassed += checkoutPassed;
-    // totalFailed += checkoutFailed;
-    //
-    // if (checkoutFailed > 0) {
-    //   console.error('🔴 Algunos tests de checkout fallaron. Se detiene la ejecución aquí.\n');
-    //   printGlobalResults(totalPassed, totalFailed);
-    //   process.exit(1);
-    // }
+    
+    // 4) Ejecutar tests de actualización de incidente
+    const runUpdateIncidentTests = require('./features/update-incident-test');
+    const { passed: updateIncidentPassed, failed: updateIncidentFailed } = await runUpdateIncidentTests();
+    printResults('update-incident-test', updateIncidentPassed, updateIncidentFailed);
+    totalPassed += updateIncidentPassed;
+    totalFailed += updateIncidentFailed;
+    
 
-    // (Si agregas más tests, repite el mismo patrón: ejecutar → printResults → acumular → si fail > 0, printGlobalResults y exit)
-
+    // 5) Ejecutar tests de eliminación de incidente
+    const runDeleteIncidentTests = require('./features/delete-incident-test');
+    const { passed: deleteIncidentPassed, failed: deleteIncidentFailed } = await runDeleteIncidentTests();
+    printResults('delete-incident-test', deleteIncidentPassed, deleteIncidentFailed);
+    totalPassed += deleteIncidentPassed;
+    totalFailed += deleteIncidentFailed;
+    
     // Mostrar resumen global final
     printGlobalResults(totalPassed, totalFailed);
     process.exit(0);

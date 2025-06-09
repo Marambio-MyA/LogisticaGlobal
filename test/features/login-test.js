@@ -112,7 +112,13 @@ async function runLoginTests() {
 
     // Validación
     if (testCase.expectSuccess && loginExitoso) {
-      console.log(`${getTimestamp()}    ` + chalk.green('✔ Resultado esperado: login exitoso.'));
+      console.log(`${getTimestamp()} ` + chalk.green('✔ Resultado esperado: login exitoso.'));
+      // Hacer click en "Cerrar sesión" cuando el login sea exitoso
+      await page.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('button'))
+          .find(b => b.textContent.trim() === 'Cerrar sesión');
+        if (btn) btn.click();
+      });
       passed++;
     } else if (!testCase.expectSuccess && !loginExitoso) {
       console.log(`${getTimestamp()}    ` + chalk.yellow('✔ Resultado esperado: login rechazado.'));
