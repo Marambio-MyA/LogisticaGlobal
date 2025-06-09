@@ -4,7 +4,7 @@ pipeline {
     environment {
         VITE_API_HOST = credentials('VITE_API_HOST')
         VITE_ENV = credentials('VITE_ENV')
-        TEST_URL = credentials('TEST_URL') // Ej: http://localhost:5000
+        TEST_URL = credentials('TEST_URL')
         TEST_EMAIL = credentials('TEST_EMAIL')
         TEST_PASSWORD = credentials('TEST_PASSWORD')
     }
@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        stage('Setup Node.js') {
+        stage('Setup Node.js (omitido en Windows si ya está instalado)') {
             steps {
                 bat 'node -v'
                 bat 'npm -v'
@@ -34,29 +34,24 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    withEnv([
-                        "VITE_API_HOST=${env.VITE_API_HOST}",
-                        "VITE_ENV=${env.VITE_ENV}"
-                    ]) {
+                    withEnv(["VITE_API_HOST=${env.VITE_API_HOST}", "VITE_ENV=${env.VITE_ENV}"]) {
                         bat 'npm run build -- --mode test'
                     }
                 }
             }
         }
 
-        stage('Serve Frontend (Background)') {
+        stage('Serve Frontend in Background') {
             steps {
                 dir('frontend') {
-                    bat 'start "serve" cmd /c "npx serve -s dist -l 5000"'
+                    bat 'start /B npx serve -s dist -l 5000'
                 }
-                // Espera unos segundos para que el servidor arranque
-                bat 'timeout /t 3'
             }
         }
 
-        stage('Verificar servidor') {
+        stage('Wait for Frontend') {
             steps {
-                bat 'curl http://localhost:5000'
+                bat 'npx wait-on http://localhost:5000'
             }
         }
 
