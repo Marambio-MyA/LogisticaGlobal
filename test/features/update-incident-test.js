@@ -17,7 +17,7 @@ const NUEVO_ESTADO_ROBOT = 'en_reparacion';
 async function runUpdateIncidentTest() {
    const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true,
+        headless: false,
         slowMo: 50,
       });
   const page = await browser.newPage();
@@ -36,11 +36,11 @@ async function runUpdateIncidentTest() {
     await page.waitForSelector('tbody.MuiTableBody-root tr', { visible: true });
     console.log(`${getTimestamp()} ▶ [update-incident-test] Buscando última fila y botón de editar...`);
     const rows = await page.$$('tbody.MuiTableBody-root tr');
-    if (rows.length === 0) throw new Error('No se encontraron filas en la tabla');
     const lastRow = rows[rows.length - 1];
-    
+    // Obtener todos los botones dentro de la celda de acciones
     const actionButtons = await lastRow.$$(':scope td:last-child button');
-    const editButton = actionButtons[0];
+    const editButton = actionButtons[1];
+    // Usar el que necesites, por ejemplo:
     await editButton.click();
 
     // 4. Esperar modal
