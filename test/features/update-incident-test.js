@@ -38,9 +38,10 @@ async function runUpdateIncidentTest() {
     const rows = await page.$$('tbody.MuiTableBody-root tr');
     if (rows.length === 0) throw new Error('No se encontraron filas en la tabla');
     const lastRow = rows[rows.length - 1];
-    const editButton = await lastRow.$('button svg[data-testid="EditIcon"]');
-    const parentButton = await editButton.evaluateHandle(svg => svg.closest('button'));
-    await parentButton.click();
+    
+    const actionButtons = await lastRow.$$(':scope td:last-child button');
+    const editButton = actionButtons[0];
+    await editButton.click();
 
     // 4. Esperar modal
     console.log(`${getTimestamp()} ▶ [update-incident-test] Esperando que se abra el modal de edición...`);
