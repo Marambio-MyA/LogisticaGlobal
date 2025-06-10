@@ -28,6 +28,11 @@ async function runViewIncidentTest() {
 
     await page.waitForSelector('tbody.MuiTableBody-root tr');
 
+    // Contar los incidentes existentes
+    console.log(`${getTimestamp()} ▶ [view-incident-test] Contando incidentes existentes...`);
+    const countBefore = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
+
+
     // Seleccionar la última fila y hacer clic en el ícono de "Ver"
     console.log(`${getTimestamp()} ▶ [view-incident-test] Seleccionando último incidente...`);
     const rows = await page.$$('tbody.MuiTableBody-root tr');
