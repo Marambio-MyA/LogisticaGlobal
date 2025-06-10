@@ -31,6 +31,7 @@ async function runViewIncidentTest() {
     // Contar los incidentes existentes
     console.log(`${getTimestamp()} ▶ [view-incident-test] Contando incidentes existentes...`);
     const countBefore = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
+    console.log(`${getTimestamp()} ▶ [view-incident-test] Total de incidentes antes de la prueba: ${countBefore}`);
 
 
     // Seleccionar la última fila y hacer clic en el ícono de "Ver"
