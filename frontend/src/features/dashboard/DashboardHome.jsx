@@ -5,6 +5,7 @@ import capitalizeFirst from '../utils/utils';
 
 import RobotStatusPieChart from './components/RobotStatusPieChart';
 import IncidentesBarChart from './components/IncidentesBarChart';
+import Robots from './components/Robots'; // CRUD de robots
 
 // Mapa de colores por estado
 const colorByEstado = {
@@ -36,7 +37,7 @@ const DashboardHome = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -85,25 +86,21 @@ const DashboardHome = () => {
   }
 
   return (
-    
-    <Box
-    
-      >
-            <Typography variant="h4" gutterBottom>
-                Panel de Control
-            </Typography>
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Panel de Control
+      </Typography>
 
-            <Paper sx={{display:'flex', justifyContent: 'space-around', p: 2, gap: 4, padding:5}}>
-                <RobotStatusPieChart data={robotStatusData} colors={colorByEstado} />
-                <IncidentesBarChart data={incidentesPorEstado} colors={colorByEstado} />
-            </Paper>
-            
+      <Paper sx={{ display: 'flex', justifyContent: 'space-around', p: 2, gap: 4, padding: 5 }}>
+        <RobotStatusPieChart data={robotStatusData} colors={colorByEstado} />
+        <IncidentesBarChart data={incidentesPorEstado} colors={colorByEstado} />
+      </Paper>
+
+      <Box mt={4}>
+        <Robots />
+      </Box>
     </Box>
-    
   );
 };
 
 export default DashboardHome;
-
-
-
