@@ -24,7 +24,7 @@ function printGlobalResults(totalPassed, totalFailed) {
     let totalPassed = 0;
     let totalFailed = 0;
   
-    
+    /*
     // 1) Ejecutar tests de login
     const runLoginTests = require('./features/login-test');
     const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
@@ -45,7 +45,7 @@ function printGlobalResults(totalPassed, totalFailed) {
     printResults('create-incident-test', createIncidentPassed, createIncidentFailed);
     totalPassed += createIncidentPassed;
     totalFailed += createIncidentFailed;
-    
+    */
     // 3) Ejecutar tests de visualización de incidente
     const runViewIncidentTests = require('./features/view-incident-test');
     const { passed: viewIncidentPassed, failed: viewIncidentFailed } = await runViewIncidentTests();

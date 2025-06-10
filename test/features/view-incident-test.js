@@ -38,7 +38,9 @@ async function runViewIncidentTest() {
     console.log(`${getTimestamp()} ▶ [view-incident-test] Seleccionando último incidente...`);
     const rows = await page.$$('tbody.MuiTableBody-root tr');
     const lastRow = rows[rows.length - 1];
-    const viewButton = await lastRow.$('[data-testid="VisibilityIcon"]');
+    
+    const actionButtons = await lastRow.$$(':scope td:last-child button');
+    const viewButton = actionButtons[0];
     await viewButton.click();
 
     // Esperar y verificar campos
