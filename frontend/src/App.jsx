@@ -4,14 +4,7 @@ import Login from './features/auth/Login';
 import Dashboard from './features/dashboard/Dashboard';
 import Incidentes from './features/incidentes/Incidentes';
 import { Typography } from '@mui/material';
-
-// Componente de inicio del dashboard (ruta index)
-const DashboardHome = () => (
-  <div>
-    <Typography variant="h4">Panel de Control</Typography>
-    <Typography>Bienvenido al inicio del dashboard</Typography>
-  </div>
-);
+import DashboardHome from './features/dashboard/DashboardHome';
 
 const App = () => {
   return (
