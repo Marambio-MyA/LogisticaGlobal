@@ -31,8 +31,9 @@ async function runDeleteIncidentTest() {
     // Seleccionar última fila
     const rows = await page.$$('tbody.MuiTableBody-root tr');
     const lastRow = rows[rows.length - 1];
-    const deleteIcon = await lastRow.$('[data-testid="DeleteIcon"]');
-    if (!deleteIcon) throw new Error('No se encontró el botón DeleteIcon');
+    // Obtener todos los botones dentro de la celda de acciones
+    const actionButtons = await lastRow.$$(':scope td:last-child button');
+    const deleteIcon = actionButtons[2];
 
     // Escuchar el diálogo de confirmación
     page.once('dialog', async (dialog) => {
