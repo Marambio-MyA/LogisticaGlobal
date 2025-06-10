@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  InputAdornment,
   Paper,
   Table,
   TableBody,
@@ -17,16 +16,15 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import { Search, Visibility } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import axiosInstance from "../../api/axiosInstance";
 import FormCreateUser from "./components/FormCreateUser";
 import FormEditUser from "./components/FormEditUser";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import capitalizeFirst from "../utils/utils";
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -43,6 +41,22 @@ const Usuarios = () => {
       setFilteredUsuarios(res.data);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
+    }
+  };
+
+  const ROLES = {admin: 'Administrador',jefe_turno: 'Jefe de turno',supervisor: 'Supervisor', tecnico: 'Tecnico'}
+
+  const deleteUsuario = async (id) => {
+    const confirmar = window.confirm(
+      "¿Estás seguro de que quieres eliminar a este usuario?"
+    );
+    if (!confirmar) return;
+
+    try {
+      await axiosInstance.delete(`/usuario/${id}`);
+      await fetchUsuarios(); // Actualiza la lista
+    } catch (error) {
+      console.error("Error al eliminar al usuario:", error);
     }
   };
 
@@ -81,6 +95,7 @@ const Usuarios = () => {
         <Typography variant="h4">Administración de Usuarios</Typography>
         <Button
           variant="contained"
+          id="nuevo-usuario-btn"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog("create")}
         >
@@ -109,15 +124,15 @@ const Usuarios = () => {
           </TableHead>
           <TableBody>
             {filteredUsuarios.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id || user._id}>
                 <TableCell>{user.nombre}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.rol}</TableCell>
+                <TableCell>{ROLES[user.rol]}</TableCell>
                 <TableCell>
-                  <IconButton>
-                    <EditIcon onClick={() => handleOpenDialog("edit")} />
+                  <IconButton onClick={() => handleOpenDialog("edit", user)}>
+                    <EditIcon />
                   </IconButton>
-                  <IconButton>
+                  <IconButton onClick={() => deleteUsuario(user.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -136,14 +151,18 @@ const Usuarios = () => {
         <DialogTitle>
           {dialogMode === "create" && "Crear Usuario"}
           {dialogMode === "edit" && "Editar Usuario"}
-          {dialogMode === "view" && "Detalle del Usuario"}
+          {!["create", "edit"].includes(dialogMode) && "Usuario"}
         </DialogTitle>
         <DialogContent>
           {dialogMode === "create" && (
             <FormCreateUser onSubmit={handleCloseDialog} />
           )}
           {dialogMode === "edit" && (
-            <FormEditUser onClose={handleCloseDialog} usuario={selectedUser} />
+            <FormEditUser
+              open={openDialog && dialogMode === "edit"}
+              onClose={handleCloseDialog}
+              usuario={selectedUser}
+            />
           )}
         </DialogContent>
         <DialogActions>

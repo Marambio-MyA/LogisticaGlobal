@@ -1,4 +1,3 @@
-// components/FormEditUser.jsx
 import {
   Dialog,
   DialogTitle,
@@ -12,11 +11,21 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../../api/axiosInstance';
 
 const FormEditUser = ({ open, onClose, usuario }) => {
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    rol: '',
+    id: null,
+  });
 
   useEffect(() => {
     if (usuario) {
-      setFormData({ ...usuario });
+      setFormData({
+        nombre: usuario.nombre || '',
+        email: usuario.email || '',
+        rol: usuario.rol || '',
+        id: usuario.id || usuario._id || null,
+      });
     }
   }, [usuario]);
 
@@ -29,18 +38,18 @@ const FormEditUser = ({ open, onClose, usuario }) => {
     if (!confirmar) return;
 
     try {
-      await axiosInstance.put(`/usuarios/${formData.id}`, {
-        ...formData,
-        // evitar enviar campos sensibles si no son modificables
-        password: undefined,
-      });
+      const dataToSend = { ...formData };
+      if (!dataToSend.password) delete dataToSend.password;
+
+      await axiosInstance.put(`/usuarios/${formData.id}`, dataToSend);
       onClose(); // cierra y permite recargar
     } catch (err) {
       console.error('Error al actualizar usuario:', err);
     }
   };
 
-  if (!formData) return null;
+  // Opcional: muestra un loader o mensaje si no hay id aún
+  if (!formData.id) return null;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -50,28 +59,32 @@ const FormEditUser = ({ open, onClose, usuario }) => {
           fullWidth
           margin="normal"
           label="Nombre"
-          value={formData.nombre || ''}
+          id="edit-nombre-input"
+          value={formData.nombre}
           onChange={(e) => handleFieldChange('nombre', e.target.value)}
         />
         <TextField
           fullWidth
           margin="normal"
           label="Email"
-          value={formData.email || ''}
+          id="edit-email-input"
+          value={formData.email}
           onChange={(e) => handleFieldChange('email', e.target.value)}
+          type="email"
         />
         <TextField
           select
           fullWidth
           margin="normal"
           label="Rol"
-          value={formData.rol || ''}
+          id="edit-rol-select"
+          value={formData.rol}
           onChange={(e) => handleFieldChange('rol', e.target.value)}
         >
           <MenuItem value="admin">Administrador</MenuItem>
-          <MenuItem value="operador">Operador</MenuItem>
-          <MenuItem value="invitado">Invitado</MenuItem>
-          <MenuItem value="invitado">Tecnico</MenuItem>
+          <MenuItem value="supervisor">Supervisor</MenuItem>
+          <MenuItem value="jefe_turno">Jefe de turno</MenuItem>
+          <MenuItem value="tecnico">Técnico</MenuItem>
         </TextField>
       </DialogContent>
       <DialogActions>
