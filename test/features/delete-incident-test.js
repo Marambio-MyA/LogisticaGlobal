@@ -41,6 +41,7 @@ async function runDeleteIncidentTest() {
       await dialog.accept();
     });
 
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Haciendo clic en el ícono de eliminar...`);
     // Hacer clic en el ícono de eliminar
     await deleteIcon.evaluate(btn => btn.scrollIntoView({ behavior: 'instant', block: 'center' }));
     await deleteIcon.click();
@@ -56,7 +57,7 @@ async function runDeleteIncidentTest() {
     );
 
     const countAfter = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
-    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes leugo de eliminación: ${countAfter}`);
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes luego de eliminación: ${countAfter}`);
 
     if (countAfter < countBefore) {
       console.log(`${getTimestamp()} `+ chalk.green('✔ Incidente eliminado exitosamente'));

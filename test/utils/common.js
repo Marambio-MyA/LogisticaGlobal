@@ -18,10 +18,10 @@ async function login(page) {
   await page.goto(URL);
 
   await page.waitForSelector('input[name="email"]');
-  await page.type('input[name="email"]', 'usuariotest@gmail.com');
+  await page.type('input[name="email"]', EMAIL);
 
   await page.waitForSelector('input[type="password"]');
-  await page.type('input[type="password"]', 'Testing9182');
+  await page.type('input[type="password"]', PASSWORD);
 
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button'))
