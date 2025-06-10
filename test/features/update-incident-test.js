@@ -17,7 +17,7 @@ const NUEVO_ESTADO_ROBOT = 'en_reparacion';
 async function runUpdateIncidentTest() {
    const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: false,
+        headless: true,
         slowMo: 50,
       });
   const page = await browser.newPage();
