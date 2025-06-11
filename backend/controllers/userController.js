@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
-import { sequelize } from '../config/database.js';
-import User from '../models/user.model.js';
+import bcrypt from "bcrypt";
+import { sequelize } from "../config/database.js";
+import User from "../models/user.model.js";
 // Function to create a new user
 export async function createUser(req, res) {
   const user = req.body;
@@ -8,7 +8,8 @@ export async function createUser(req, res) {
   try {
     // Validar si el correo ya existe
     const existingUser = await User.findOne({ where: { email: user.email } });
-    if (existingUser) return res.status(400).json({ error: 'Correo ya registrado' });
+    if (existingUser)
+      return res.status(400).json({ error: "Correo ya registrado" });
 
     // Encriptar contraseña
     const password_hash = await bcrypt.hash(user.password, 10);
@@ -19,7 +20,7 @@ export async function createUser(req, res) {
     res.status(201).json(newUser);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ error: "Error en el servidor" });
   }
 }
 
@@ -30,7 +31,7 @@ export const getUsers = async (req, res) => {
     res.status(200).json(usuarios);
   } catch (err) {
     console.error("Error al obtener usuarios:", err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -41,12 +42,12 @@ export const getUserById = async (req, res) => {
   try {
     const user = await User.findByPk(id);
     if (!user) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
     res.status(200).json(user);
   } catch (err) {
     console.error("Error al obtener el usuario:", err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -58,7 +59,7 @@ export const updateUser = async (req, res) => {
   try {
     const user = await User.findByPk(id);
     if (!user) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
     // Si se cambia la contraseña, encriptarla
@@ -69,11 +70,14 @@ export const updateUser = async (req, res) => {
     }
 
     userData.password = password_hash;
-    const usuarioActualizado = await User.update(userData, { where: { id } });
+    await User.update(userData, { where: { id } });
+    const usuarioActualizado = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
     res.status(200).json(usuarioActualizado);
   } catch (err) {
     console.error("Error al actualizar el usuario:", err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -84,13 +88,13 @@ export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByPk(id);
     if (!user) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
     await User.destroy({ where: { id } });
-    res.status(200).json({ message: 'Usuario eliminado correctamente' });
+    res.status(200).json({ message: "Usuario eliminado correctamente" });
   } catch (err) {
     console.error("Error al eliminar el usuario:", err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
