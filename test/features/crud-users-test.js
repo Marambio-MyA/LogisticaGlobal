@@ -36,9 +36,12 @@ async function runUsuariosTests() {
 
     // --- Test 3: Crear nuevo usuario ---
     try {
-      // Boton "Nuevo Incidente"
+      await page.waitForSelector("#nuevo-usuario-btn", { timeout: 3000 });
+      await page.click("#nuevo-usuario-btn");
+
+      // Boton "Nuevo usuario"
       console.log(
-        `${getTimestamp()} ▶ [create-incident-test] Esperando botón 'Nuevo Incidente'...`
+        `${getTimestamp()} ▶ [create-usuario-test] Esperando botón 'Nuevo Incidente'...`
       );
       await page.waitForSelector('[id="nuevo-usuario-btn"]', {
         visible: true,

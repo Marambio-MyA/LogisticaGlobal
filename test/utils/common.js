@@ -38,8 +38,17 @@ async function navagation_to_incidents(page) {
     });
 }
 
+async function navagation_to_users(page) {
+  await page.waitForSelector('ul.MuiList-root');
+    await page.evaluate(() => {
+      const menu = [...document.querySelectorAll('li')].find(li => li.textContent.trim() === 'Usuarios');
+      menu?.click();
+    });
+}
+
 module.exports = {
   getTimestamp,
   login,
   navagation_to_incidents,
+  navagation_to_users,
 };

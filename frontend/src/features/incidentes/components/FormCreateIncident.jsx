@@ -1,40 +1,55 @@
 // components/FormularioNuevoIncidente.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
-  Box, TextField, MenuItem, Typography, Button, Table, TableBody, TableCell,
-  TableHead, TableRow, Paper, Select, InputLabel, FormControl
-} from '@mui/material';
-import axiosInstance from '../../../api/axiosInstance';
-import { useSelector } from 'react-redux';
-import capitalizeFirst from '../../utils/utils.jsx';
+  Box,
+  TextField,
+  MenuItem,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import axiosInstance from "../../../api/axiosInstance";
+import { useSelector } from "react-redux";
+import capitalizeFirst from "../../utils/utils.jsx";
 
-
-const ESTADOS_ROBOT = ['operativo', 'en_reparacion', 'fuera_servicio'];
+const ESTADOS_ROBOT = ["operativo", "en_reparacion", "fuera_servicio"];
 
 const FormCreateIncident = ({ onSubmit }) => {
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
   const [robots, setRobots] = useState([]);
   const [incidente, setIncidente] = useState({
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: new Date().toISOString().split("T")[0],
     hora: new Date().toTimeString().slice(0, 5),
-    ubicacion: '',
-    tipo_incidente: 'mecanico',
-    descripcion: '',
-    estado: 'creado',
-    detalle_robots: []
+    ubicacion: "",
+    tipo_incidente: "mecanico",
+    descripcion: "",
+    estado: "creado",
+    detalle_robots: [],
   });
 
   useEffect(() => {
-    axiosInstance.get('/robots')
-      .then(res => setRobots(res.data))
-      .catch(err => console.error('Error al cargar robots', err));
+    axiosInstance
+      .get("/robots")
+      .then((res) => setRobots(res.data))
+      .catch((err) => console.error("Error al cargar robots", err));
   }, []);
 
   const agregarRobot = (robot) => {
-    if (!incidente.detalle_robots.some(r => r.id === robot.id)) {
+    if (!incidente.detalle_robots.some((r) => r.id === robot.id)) {
       setIncidente({
         ...incidente,
-        detalle_robots: [...incidente.detalle_robots, { id: robot.id, estado: 'operativo' }]
+        detalle_robots: [
+          ...incidente.detalle_robots,
+          { id: robot.id, estado: "operativo" },
+        ],
       });
     }
   };
@@ -46,38 +61,49 @@ const FormCreateIncident = ({ onSubmit }) => {
   };
 
   const handleSubmit = async () => {
-    const confirmar = window.confirm('¿Estás seguro de que quieres añadir este incidente?');
+    const confirmar = window.confirm(
+      "¿Estás seguro de que quieres añadir este incidente?"
+    );
     if (!confirmar) return;
     try {
-      await axiosInstance.post('/incidentes', {
+      await axiosInstance.post("/incidentes", {
         ...incidente,
-        creado_por: user.id
+        creado_por: user.id,
       });
       onSubmit?.();
     } catch (err) {
-      console.error('Error al crear incidente', err);
+      console.error("Error al crear incidente", err);
     }
   };
 
   return (
     <Box>
       <TextField
-        fullWidth margin="normal" label="Ubicación"
+        fullWidth
+        margin="normal"
+        label="Ubicación"
         required
         value={incidente.ubicacion}
         onChange={e => setIncidente({ ...incidente, ubicacion: e.target.value })}
         slotProps={{ input: { 'input-id': 'ubicacion-input' } }}
       />
       <TextField
-        fullWidth margin="normal" label="Descripción"
+        fullWidth
+        margin="normal"
+        label="Descripción"
         required
         value={incidente.descripcion}
-        onChange={e => setIncidente({ ...incidente, descripcion: e.target.value })}
+        onChange={(e) =>
+          setIncidente({ ...incidente, descripcion: e.target.value })
+        }
         multiline
         slotProps={{ input: { 'input-id': 'descripcion-input' } }}
       />
       <TextField
-        select fullWidth margin="normal" label="Tipo de Incidente"
+        select
+        fullWidth
+        margin="normal"
+        label="Tipo de Incidente"
         required
         value={incidente.tipo_incidente}
         onChange={e => setIncidente({ ...incidente, tipo_incidente: e.target.value })}
@@ -88,21 +114,29 @@ const FormCreateIncident = ({ onSubmit }) => {
         ))}
       </TextField>
       <TextField
-        fullWidth margin="normal" label="Fecha" type="date"
+        fullWidth
+        margin="normal"
+        label="Fecha"
+        type="date"
         value={incidente.fecha}
         required
-        onChange={e => setIncidente({ ...incidente, fecha: e.target.value })}
+        onChange={(e) => setIncidente({ ...incidente, fecha: e.target.value })}
         InputLabelProps={{ shrink: true }}
       />
       <TextField
-        fullWidth margin="normal" label="Hora" type="time"
+        fullWidth
+        margin="normal"
+        label="Hora"
+        type="time"
         value={incidente.hora}
-        onChange={e => setIncidente({ ...incidente, hora: e.target.value })}
+        onChange={(e) => setIncidente({ ...incidente, hora: e.target.value })}
         required
       />
 
-      <Typography variant="h6" mt={3}>Robots disponibles</Typography>
-      <Paper sx={{ maxHeight: 200, overflow: 'auto' }}>
+      <Typography variant="h6" mt={3}>
+        Robots disponibles
+      </Typography>
+      <Paper sx={{ maxHeight: 200, overflow: "auto" }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -113,7 +147,7 @@ const FormCreateIncident = ({ onSubmit }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {robots.map(robot => (
+            {robots.map((robot) => (
               <TableRow key={robot.id}>
                 <TableCell>{robot.id}</TableCell>
                 <TableCell>{robot.modelo}</TableCell>
@@ -129,7 +163,9 @@ const FormCreateIncident = ({ onSubmit }) => {
 
       {incidente.detalle_robots.length > 0 && (
         <>
-          <Typography variant="h6" mt={3}>Robots seleccionados</Typography>
+          <Typography variant="h6" mt={3}>
+            Robots seleccionados
+          </Typography>
           {incidente.detalle_robots.map((r, idx) => (
             <TableRow key={r.id}>
               <TableCell>{r.id}</TableCell>
@@ -150,7 +186,6 @@ const FormCreateIncident = ({ onSubmit }) => {
               </TableCell>
             </TableRow>
           ))}
-
         </>
       )}
 
