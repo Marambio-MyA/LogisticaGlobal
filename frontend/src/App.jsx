@@ -5,6 +5,8 @@ import Dashboard from './features/dashboard/Dashboard';
 // import DashboardHome from './features/dashboard/DashboardHome';
 import Incidentes from './features/incidentes/Incidentes';
 import Usuarios from './features/usuarios/usuarios';
+import { Typography } from '@mui/material';
+import DashboardHome from './features/dashboard/DashboardHome';
 
 const App = () => {
   return (
@@ -13,7 +15,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
 
         <Route path="/dashboard" element={<Dashboard />}>
-          {/* <Route index element={<DashboardHome />} /> */}
+          <Route index element={<DashboardHome />} />
           <Route path="incidentes" element={<Incidentes />} />
           <Route path="usuarios" element={<Usuarios />} />
         </Route>

@@ -50,44 +50,7 @@ async function runUsuariosTests() {
       console.log(
         `${getTimestamp()} ▶ [create-usuario-test] Haciendo clic en 'Nuevo usuario' y abrir el modal...`
       );
-
-      // //nombre
-      // console.log(
-      //   `${getTimestamp()} ▶ [create-usuario-test] Rellenando nombre...`
-      // );
-      // await page.$eval(
-      //   '[input-id="nombre-input"] input',
-      //   (input, value) => {
-      //     input.focus();
-      //     const setter = Object.getOwnPropertyDescriptor(
-      //       Object.getPrototypeOf(input),
-      //       "value"
-      //     ).set;
-      //     setter.call(input, value);
-      //     input.dispatchEvent(new Event("input", { bubbles: true }));
-      //   },
-      //   USER_NAME
-      // );
-
-      // Rellenar la ubicación
-      console.log(
-        `${getTimestamp()} ▶ [create-usuario-test] Rellenando Ubicación...`
-      );
-      await page.$eval(
-        'input[input-id="nombre-input"]',
-        (input, value) => {
-          console.log(input);
-          console.log(value);
-          input.focus();
-          const setter = Object.getOwnPropertyDescriptor(
-            Object.getPrototypeOf(input),
-            "value"
-          ).set;
-          setter.call(input, value);
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-        },
-        USER_NAME
-      );
+      await page.click('[id="nuevo-usuario-btn"]');
 
       await page.waitForTimeout(1500);
       console.log(
