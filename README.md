@@ -40,10 +40,37 @@ Dirigirse a la carpeta frontend
 cd frontend
 ```
 
+El Frontend nececia de un .env para conectarse con la API del backend y definir el tipo de ambiente:
+```
+VITE_API_HOST = VITE_API_HOST
+VITE_API_PORT = VITE_API_PORT
+VITE_ENV = VITE_ENV
+```
+
 Ejecutar estos comandos para iniciar al servidor.
 ```
 npm install
 npm run dev
+```
+
+### Test
+
+Dirigirse a la carpeta test
+```
+cd test
+```
+
+Las pruebas requieren de un .env para conectarse al ambiente e iniciar sesión con un usuario:
+```
+TEST_URL = TEST_URL
+TEST_EMAIL = TEST_EMAIL
+TEST_PASSWORD = TEST_PASSWORD
+```
+
+Ejecutar estos comandos para iniciar las pruebas.
+```
+npm install
+node main-test.js
 ```
 
 Para mas informacion de la documentación mirar la [Wiki](https://github.com/Marambio-MyA/LogisticaGlobal/wiki)

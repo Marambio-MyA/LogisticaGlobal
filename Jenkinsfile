@@ -72,8 +72,17 @@ pipeline {
     }
 
     post {
+        success {
+            slackSend(channel: '#jenkins-notif', message: "✅ *Build OK:* `${env.JOB_NAME}` #${env.BUILD_NUMBER}\n${env.BUILD_URL}")
+            githubNotify context: 'Jenkins CI', status: 'SUCCESS', description: 'Build passed', targetUrl: "${env.BUILD_URL}"
+        }
+        failure {
+            slackSend(channel: '#jenkins-notif', message: "❌ *Build FAILED:* `${env.JOB_NAME}` #${env.BUILD_NUMBER}\n${env.BUILD_URL}")
+            githubNotify context: 'Jenkins CI', status: 'FAILURE', description: 'Build failed', targetUrl: "${env.BUILD_URL}"
+        }
         always {
             echo 'Pipeline finished.'
         }
     }
+
 }

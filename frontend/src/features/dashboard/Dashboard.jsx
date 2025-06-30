@@ -40,6 +40,9 @@ const Dashboard = () => {
         <ListItem button onClick={() => navigate('/dashboard/incidentes')}>
           <ListItemText primary="Incidentes" />
         </ListItem>
+        <ListItem button onClick={() => navigate('/dashboard/usuarios')}>
+          <ListItemText primary="Usuarios" />
+        </ListItem>
       </List>
     </div>
   );
