@@ -139,13 +139,13 @@ const Incidentes = () => {
                   <TableCell>{capitalizeFirst(i.tipo_incidente)}</TableCell>
                   <TableCell>{capitalizeFirst(i.estado,true)}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleOpenDialog('view', i)}>
+                    <IconButton id={`ver-incidente-${i.id}`} onClick={() => handleOpenDialog('view', i)}>
                       <VisibilityIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleOpenDialog('edit', { ...i })}>
+                    <IconButton id={`editar-incidente-${i.id}`} onClick={() => handleOpenDialog('edit', { ...i })}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => deleteIncidente(i.id)}>
+                    <IconButton id={`eliminar-incidente-${i.id}`} onClick={() => deleteIncidente(i.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

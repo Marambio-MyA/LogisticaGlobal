@@ -34,13 +34,13 @@ const Dashboard = () => {
     <div>
       <Toolbar />
       <List>
-        <ListItem button onClick={() => navigate('/dashboard')}>
+        <ListItem button id="drawer-inicio-btn" onClick={() => navigate('/dashboard')}>
           <ListItemText primary="Inicio" />
         </ListItem>
-        <ListItem button onClick={() => navigate('/dashboard/incidentes')}>
+        <ListItem button id="drawer-incidentes-btn" onClick={() => navigate('/dashboard/incidentes')}>
           <ListItemText primary="Incidentes" />
         </ListItem>
-        <ListItem button onClick={() => navigate('/dashboard/usuarios')}>
+        <ListItem button id="drawer-usuarios-btn" onClick={() => navigate('/dashboard/usuarios')}>
           <ListItemText primary="Usuarios" />
         </ListItem>
       </List>
@@ -66,7 +66,7 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Bienvenido, {user?.name || 'Usuario'}
           </Typography>
-          <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
+          <Button id="cerrar-sesion-button" color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
         </Toolbar>
       </AppBar>
 

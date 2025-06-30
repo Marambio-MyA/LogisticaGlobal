@@ -33,30 +33,33 @@ const FormEditRobot = ({ robotId, onSubmit }) => {
   return (
     <Box>
       <TextField
+        id="modelo-robot-edit-input"
         fullWidth margin="normal" label="Modelo"
         value={robot.modelo}
         onChange={e => setRobot({ ...robot, modelo: e.target.value })}
         required
       />
       <TextField
+        id="estado-robot-edit-select"
         select fullWidth margin="normal" label="Estado"
         value={robot.estado_actual}
         onChange={e => setRobot({ ...robot, estado_actual: e.target.value })}
       >
         {ESTADOS_ROBOT.map(estado => (
-          <MenuItem key={estado} value={estado}>
+          <MenuItem id={`estado-robot-${estado}`} key={estado} value={estado}>
             {capitalizeFirst(estado, true)}
           </MenuItem>
         ))}
       </TextField>
       <TextField
+        id="ubicacion-robot-edit-input"
         fullWidth margin="normal" label="Ubicación actual"
         value={robot.ubicacion_actual}
         onChange={e => setRobot({ ...robot, ubicacion_actual: e.target.value })}
         required
       />
       <Box mt={2}>
-        <Button variant="contained" onClick={handleSubmit}>
+        <Button id="guardar-cambios-button" variant="contained" onClick={handleSubmit}>
           Guardar Cambios
         </Button>
       </Box>

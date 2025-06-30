@@ -88,8 +88,8 @@ const FormEditUser = ({ open, onClose, usuario }) => {
         </TextField>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit}>
+        <Button id="cancelar-editar-usuario-btn" onClick={onClose}>Cancelar</Button>
+        <Button id="guardar-cambios-btn" variant="contained" onClick={handleSubmit}>
           Guardar Cambios
         </Button>
       </DialogActions>
