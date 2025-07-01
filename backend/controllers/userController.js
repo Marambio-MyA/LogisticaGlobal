@@ -26,7 +26,7 @@ export async function createUser(req, res) {
 // Obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const usuarios = await User.findAll();
+    const usuarios = await User.findAll({ order: [['id', 'ASC']] });
     res.status(200).json(usuarios);
   } catch (err) {
     console.error("Error al obtener usuarios:", err);

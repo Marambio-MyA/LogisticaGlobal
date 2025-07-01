@@ -1,11 +1,6 @@
-import { getTimestamp } from "./utils/common.js";
-import chalk from "chalk";
-import { runLoginTests } from "./features/login-test-s.js";
-import { runCreateIncidentTests } from "./features/create-incident-test-s.js";
-import { runViewIncidentTests } from "./features/view-incident-test-s.js";
-import { runUpdateIncidentTests } from "./features/update-incident-test-s.js";
-import { runDeleteIncidentTests } from "./features/delete-incident-test-s.js";
-// Muestra por consola el resumen de un conjunto de tests individuales.
+import { getTimestamp } from './utils/common.js';
+import chalk from 'chalk';
+
 function printResults(label, passed, failed) {
   console.log(
     `${getTimestamp()} [Resumen ${label}] expected cases: ` +
@@ -16,86 +11,70 @@ function printResults(label, passed, failed) {
   );
 }
 
-// Muestra por consola el resumen global de todos los tests que se han ejecutado.
 function printGlobalResults(totalPassed, totalFailed) {
-  console.log("\n===============TEST SESSION RESULTS===============");
-  console.log(
-    `${getTimestamp()} Correctly expected cases:   ` + chalk.green(totalPassed)
-  );
-  console.log(
-    `${getTimestamp()} Cases with unexpected results: ` + chalk.red(totalFailed)
-  );
-  console.log("==================================================\n");
+  console.log('\n=============== TEST SESSION RESULTS ===============');
+  console.log(`${getTimestamp()} Correctly expected cases:   ` + chalk.green(totalPassed));
+  console.log(`${getTimestamp()} Cases with unexpected results: ` + chalk.red(totalFailed));
+  console.log('==================================================\n');
 }
 
-(async () => {
-  console.log(
-    "\n===================== STARTING ALL TESTS =====================\n"
-  );
+const testsToRun = [
+  ['login-test', './features/login-test-s.js'],
+  ['create-incident-test', './features/create-incident-test-s.js'],
+  ['view-incident-test', './features/view-incident-test-s.js'],
+  ['update-incident-test', './features/update-incident-test-s.js'],
+  ['delete-incident-test', './features/delete-incident-test-s.js'],
+  ['view-crud-user-test', './features/crud-users-test-s.js'],
+  // Agrega más tests aquí si es necesario
+];
 
-  try {
-    let totalPassed = 0;
-    let totalFailed = 0;
+let totalPassed = 0;
+let totalFailed = 0;
 
-    // 1) Login test
-    const { passed: loginPassed, failed: loginFailed } = await runLoginTests();
-    printResults("login-test", loginPassed, loginFailed);
-    totalPassed += loginPassed;
-    totalFailed += loginFailed;
+console.log('\n===================== STARTING ALL TESTS =====================\n');
 
-    if (loginFailed > 0) {
-      console.error(
-        `${getTimestamp()} Some login tests failed. The following tests are stopped.\n`
-      );
-      printGlobalResults(totalPassed, totalFailed);
-      process.exit(1);
+try {
+  for (const [label, modulePath] of testsToRun) {
+    const module = await import(modulePath);
+    const runTest = module.runLoginTests
+      || module.runCreateIncidentTests
+      || module.runViewIncidentTests
+      || module.runUpdateIncidentTests
+      || module.runDeleteIncidentTests
+      || module.runCrudUsersTests
+      || module.default
+      || module.runTest;
+
+
+    if (typeof runTest !== 'function') {
+      throw new Error(`No se encontró una función ejecutable en ${modulePath}`);
     }
 
-    // 2) Crear incidente
-    const { passed: createIncidentPassed, failed: createIncidentFailed } =
-      await runCreateIncidentTests();
-    printResults(
-      "create-incident-test",
-      createIncidentPassed,
-      createIncidentFailed
-    );
-    totalPassed += createIncidentPassed;
-    totalFailed += createIncidentFailed;
+    const { passed, failed } = await runTest();
 
-    // 3) Ver incidente
-    const { passed: viewIncidentPassed, failed: viewIncidentFailed } =
-      await runViewIncidentTests();
-    printResults("view-incident-test", viewIncidentPassed, viewIncidentFailed);
-    totalPassed += viewIncidentPassed;
-    totalFailed += viewIncidentFailed;
+    printResults(label, passed, failed);
 
-    // 4) Actualizar incidente
-    const { passed: updateIncidentPassed, failed: updateIncidentFailed } =
-      await runUpdateIncidentTests();
-    printResults(
-      "update-incident-test",
-      updateIncidentPassed,
-      updateIncidentFailed
-    );
-    totalPassed += updateIncidentPassed;
-    totalFailed += updateIncidentFailed;
+    totalPassed += passed;
+    totalFailed += failed;
 
-    // 5) Eliminar incidente
-    const { passed: deleteIncidentPassed, failed: deleteIncidentFailed } =
-      await runDeleteIncidentTests();
-    printResults(
-      "delete-incident-test",
-      deleteIncidentPassed,
-      deleteIncidentFailed
-    );
-    totalPassed += deleteIncidentPassed;
-    totalFailed += deleteIncidentFailed;
-
-    // Resumen global
-    printGlobalResults(totalPassed, totalFailed);
-    process.exit(0);
-  } catch (err) {
-    console.error("\n Error executing some test:\n", err, "\n");
-    process.exit(1);
+    if (failed > 0 && label === 'login-test') {
+      console.error(`${getTimestamp()} Some login tests failed. Aborting remaining tests.\n`);
+      break;
+    }
   }
-})();
+
+  printGlobalResults(totalPassed, totalFailed);
+  process.exit(totalFailed > 0 ? 1 : 0);
+
+} catch (err) {
+  console.error('\n Error executing some test:\n', err, '\n');
+  process.exit(1);
+}
+
+// Utilidad para generar "LoginTest", "CreateIncidentTest", etc.
+function toPascalCase(str) {
+  return str
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+}

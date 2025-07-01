@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { Builder, By, until } from "selenium-webdriver";
+import chrome from "selenium-webdriver/chrome.js";
 import chalk from "chalk";
 import { getTimestamp } from "../utils/common.js";
 
@@ -44,100 +45,68 @@ const loginCases = [
 ];
 
 export async function runLoginTests() {
-  console.log({ SUCCESS_EMAIL, SUCCESS_PASSWORD, URL });
-  const driver = await new Builder().forBrowser("chrome").build();
   let passed = 0;
   let failed = 0;
 
-  console.log(
-    `${getTimestamp()} ▶ Iniciando ${loginCases.length} pruebas de login...\n`
-  );
+  console.log(`${getTimestamp()} ▶ [login-test] Iniciando ${loginCases.length} casos de login…`);
 
   for (let i = 0; i < loginCases.length; i++) {
     const testCase = loginCases[i];
-    console.log(`${getTimestamp()} ▶ Prueba ${i + 1}: "${testCase.name}"`);
+    const caseNumber = i + 1;
+
+    const options = new chrome.Options();
+    options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+
+    const driver = await new Builder()
+      .forBrowser("chrome")
+      .setChromeOptions(options)
+      .build();
 
     try {
+      console.log(`${getTimestamp()} ▶ [login-test] Case ${caseNumber}: "${testCase.name}"`);
       await driver.get(URL);
 
-      const emailInput = await driver.findElement(By.name("email"));
+      const emailInput = await driver.wait(until.elementLocated(By.name("email")), 5000);
       await emailInput.clear();
       await emailInput.sendKeys(testCase.email);
 
-      const passInput = await driver.findElement(
-        By.css('input[type="password"]')
-      );
-      await passInput.clear();
-      await passInput.sendKeys(testCase.password);
+      const passwordInput = await driver.wait(until.elementLocated(By.css('input[type="password"]')), 5000);
+      await passwordInput.clear();
+      await passwordInput.sendKeys(testCase.password);
 
-      // Click en el botón "Entrar"
-      const buttons = await driver.findElements(By.tagName("button"));
-      for (const btn of buttons) {
-        const text = await btn.getText();
-        if (text.trim() === "Entrar") {
-          await btn.click();
-          break;
-        }
-      }
+      const loginBtn = await driver.findElement(By.xpath("//button[normalize-space()='Entrar']"));
+      await loginBtn.click();
 
-      // Espera de navegación
       let loginExitoso = false;
       try {
-        // Intenta esperar el dashboard por URL
         await driver.wait(until.urlContains("/dashboard"), 5000);
         loginExitoso = true;
-      } catch (_) {
-        // O intenta por un elemento clave del dashboard
-        try {
-          await driver.wait(
-            until.elementLocated(By.css('[data-testid="dashboard-header"]')),
-            3000
-          );
-          loginExitoso = true;
-        } catch {
-          loginExitoso = false;
-        }
-      }
+      } catch (_) {}
 
       const finalUrl = await driver.getCurrentUrl();
 
-      // Validación
       if (testCase.expectSuccess && loginExitoso) {
-        console.log(chalk.green(`✔ Login exitoso como se esperaba`));
-        // Click en "Cerrar sesión"
-        const logoutButtons = await driver.findElements(By.tagName("button"));
-        for (const btn of logoutButtons) {
-          const text = await btn.getText();
-          if (text.trim() === "Cerrar sesión") {
-            await btn.click();
-            break;
-          }
-        }
+        console.log(`${getTimestamp()} ` + chalk.green("✔ Resultado esperado: login exitoso."));
+        try {
+          const logoutBtn = await driver.findElement(By.xpath("//button[normalize-space()='Cerrar sesión']"));
+          await logoutBtn.click();
+        } catch (_) {}
         passed++;
       } else if (!testCase.expectSuccess && !loginExitoso) {
-        console.log(chalk.yellow(`✔ Login rechazado como se esperaba`));
+        console.log(`${getTimestamp()}    ` + chalk.yellow("✔ Resultado esperado: login rechazado."));
         passed++;
       } else {
-        console.log(
-          chalk.red(`✖ Resultado inesperado (URL final: ${finalUrl})`)
-        );
+        console.log(`${getTimestamp()}    ` + chalk.red(`✖ Resultado inesperado (URL final: ${finalUrl})`));
         failed++;
       }
-    } catch (err) {
-      console.log(
-        chalk.red(`✖ Error al ejecutar caso "${testCase.name}": ${err.message}`)
-      );
-      failed++;
-    }
 
-    console.log(""); // línea en blanco
+    } catch (err) {
+      console.error(`${getTimestamp()}    ` + chalk.red("✖ Error en el test case:"), err.message);
+      failed++;
+    } finally {
+      await driver.quit();
+    }
   }
 
-  await driver.quit();
-  console.log(
-    `${getTimestamp()} ✅ Finalizado. Pasaron: ${passed} | Fallaron: ${failed}`
-  );
   return { passed, failed };
 }
-
-runLoginTests();
