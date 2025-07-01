@@ -28,7 +28,4 @@ jobs:
       - name: Run Selenium IDE Tests
         run: |
           npm install -g selenium-side-runner
-          selenium-side-runner ./test/main-test.side \
-            --base-url ${{ secrets.TEST_URL }} \
-            --capabilities.browserName=chrome \
-            --capabilities.chromeOptions.args='["--headless", "--no-sandbox", "--disable-gpu"]'
+          selenium-side-runner --config-file ./selenium-runner.yml ./test/main-test.side

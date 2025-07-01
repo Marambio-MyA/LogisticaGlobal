@@ -16,14 +16,14 @@ pipeline {
             }
         }
 
-        stage('Setup Node.js (omitido en Windows si ya está instalado)') {
+        stage('Verificar Node.js') {
             steps {
                 bat 'node -v'
                 bat 'npm -v'
             }
         }
 
-        stage('Install Frontend Dependencies') {
+        stage('Instalar dependencias del frontend') {
             steps {
                 dir('frontend') {
                     bat 'npm install'
@@ -31,7 +31,7 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
+        stage('Construir frontend') {
             steps {
                 dir('frontend') {
                     withEnv(["VITE_API_HOST=${env.VITE_API_HOST}", "VITE_ENV=${env.VITE_ENV}"]) {
@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-        stage('Serve Frontend in Background') {
+        stage('Servir frontend en segundo plano') {
             steps {
                 dir('frontend') {
                     bat 'start /B npx serve -s dist -l 5000'
@@ -49,24 +49,35 @@ pipeline {
             }
         }
 
-        stage('Wait for Frontend') {
+        stage('Esperar frontend') {
             steps {
                 bat 'npx wait-on http://localhost:5000'
             }
         }
 
-        stage('Run Puppeteer Tests') {
+        stage('Instalar selenium-side-runner') {
+            steps {
+                bat 'npm install -g selenium-side-runner'
+            }
+        }
+
+        stage('Ejecutar pruebas con Selenium IDE') {
             steps {
                 dir('test') {
-                    withEnv([
-                        "TEST_URL=${env.TEST_URL}",
-                        "TEST_EMAIL=${env.TEST_EMAIL}",
-                        "TEST_PASSWORD=${env.TEST_PASSWORD}"
-                    ]) {
-                        bat 'npm install'
-                        bat 'node main-test.js'
-                    }
+                    bat """
+                        selenium-side-runner main-test.side ^
+                        --base-url ${env.TEST_URL} ^
+                        --output-directory=./results ^
+                        --output-format=jest ^
+                        --headless
+                    """
                 }
+            }
+        }
+
+        stage('Publicar resultados') {
+            steps {
+                junit 'test/results/*.xml'
             }
         }
     }
@@ -84,5 +95,4 @@ pipeline {
             echo 'Pipeline finished.'
         }
     }
-
 }
