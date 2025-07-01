@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "dotenv": "^16.6.1",
+    "pg": "^8.15.6",
+    "selenium-webdriver": "^4.33.0",
+    "sequelize": "^6.37.7"
+  }
+}

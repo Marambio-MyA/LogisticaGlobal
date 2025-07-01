@@ -1,4 +1,4 @@
-name: Puppeteer Frontend Tests
+name: Selenium IDE Tests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
+  selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,35 +17,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
-      # --- Construir frontend ---
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm install
+      - name: Install Selenium Side Runner
+        run: npm install -g selenium-side-runner
 
-      - name: Build frontend with test env
-        working-directory: ./frontend
-        env:
-          VITE_API_HOST: ${{ secrets.VITE_API_HOST }}
-          VITE_ENV: ${{ secrets.VITE_ENV }}
-        run: npm run build -- --mode test
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
 
-      # --- Servir frontend en background ---
-      - name: Serve frontend build (background)
-        working-directory: ./frontend
-        run: npx serve -s dist -l 5000 &
-
-      - name: Wait for frontend to be ready
-        run: npx wait-on http://localhost:5000
-
-      # --- Ejecutar tests Puppeteer ---
-      - name: Run Puppeteer tests
-        working-directory: ./test
-        env:
-          TEST_URL: ${{ secrets.TEST_URL }}
-          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+      - name: Run Selenium IDE Tests
         run: |
-          npm install
-          node main-test.js
+          selenium-side-runner ./test/main-test.side \
+            --output-directory=./test-results \
+            --output-format=jest \
+            --timeout=60000 \
+            --headless
