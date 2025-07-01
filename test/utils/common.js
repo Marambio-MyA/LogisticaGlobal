@@ -17,33 +17,24 @@ function getTimestamp() {
 async function login(page) {
   await page.goto(URL);
 
-  await page.waitForSelector('input[name="email"]');
-  await page.type('input[name="email"]', EMAIL);
+  await page.waitForSelector('#email-input');
+  await page.type('#email-input', EMAIL);
 
-  await page.waitForSelector('input[type="password"]');
-  await page.type('input[type="password"]', PASSWORD);
+  await page.waitForSelector('#password-input');
+  await page.type('#password-input', PASSWORD);
 
-  await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button'))
-      .find(b => b.textContent.trim() === 'Entrar');
-    if (btn) btn.click();
-  });
+  await page.waitForSelector('#login-button');
+  await page.click('#login-button');
 }
 
 async function navagation_to_incidents(page) {
-  await page.waitForSelector('ul.MuiList-root');
-    await page.evaluate(() => {
-      const menu = [...document.querySelectorAll('li')].find(li => li.textContent.trim() === 'Incidentes');
-      menu?.click();
-    });
+  await page.waitForSelector('#drawer-incidentes-btn');
+  await page.click('#drawer-incidentes-btn');
 }
 
 async function navagation_to_users(page) {
-  await page.waitForSelector('ul.MuiList-root');
-    await page.evaluate(() => {
-      const menu = [...document.querySelectorAll('li')].find(li => li.textContent.trim() === 'Usuarios');
-      menu?.click();
-    });
+  await page.waitForSelector('#drawer-usuarios-btn');
+  await page.click('#drawer-usuarios-btn');
 }
 
 module.exports = {

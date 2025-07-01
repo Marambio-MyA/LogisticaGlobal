@@ -8,7 +8,7 @@ const { getTimestamp, login, navagation_to_incidents } = require('../utils/commo
 const INCIDENT_LOCATION = 'Sala de servidores - Piso 3';
 const INCIDENT_DESCRIPTION = 'El servidor principal presenta sobrecalentamiento constante';
 const INCIDENT_TYPE = 'colision';
-const ROBOT_ID = 2; 
+const ROBOT_ID = 1; 
 const ESTADO_DESEADO = 'fuera_servicio';
 
 async function runIncidentTest() {
@@ -21,91 +21,62 @@ async function runIncidentTest() {
   let testPassed = false;
 
   try {
-    // Iniciar sesión en la aplicación
+    // Iniciar sesión
     console.log(`${getTimestamp()} ▶ [create-incident-test] Iniciando sesión...`);
     await login(page);
 
-    // Dirigir a la página de Incidentes
+    // Navegar a incidentes
     console.log(`${getTimestamp()} ▶ [create-incident-test] Navegando a Incidentes...`);
     await navagation_to_incidents(page);
 
-    // Contar los incidentes existentes
+    // Contar incidentes antes
     await page.waitForSelector('tbody.MuiTableBody-root tr');
     const countBefore = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
 
-    // Boton "Nuevo Incidente"
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Esperando botón 'Nuevo Incidente'...`);
-    await page.waitForSelector('[id="nuevo-incidente-btn"]', {
-      visible: true,
-      timeout: 5000,
-    });
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Haciendo clic en 'Nuevo Incidente' y abrir el modal...`);
-    await page.click('[id="nuevo-incidente-btn"]');
+    // Abrir formulario nuevo
+    console.log(`${getTimestamp()} ▶ [create-incident-test] Abriendo formulario de incidente...`);
+    await page.waitForSelector('#nuevo-incidente-btn', { visible: true });
+    await page.click('#nuevo-incidente-btn');
 
-    // Rellenar la ubicación
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Rellenando Ubicación...`);
-    await page.$eval('[input-id="ubicacion-input"] input', (input, value) => {
-    input.focus();
-    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set;
-    setter.call(input, value);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-  }, INCIDENT_LOCATION);
+    await page.waitForSelector('#ubicacion-input');
+    await page.click('#ubicacion-input');
+    await page.type('#ubicacion-input', INCIDENT_LOCATION);
 
-    // Rellenar la descripción
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Rellenando Descripción...`);
-    await page.waitForSelector('[input-id="descripcion-input"] textarea', { visible: true });
+    await page.waitForSelector('#descripcion-input');
+    await page.click('#descripcion-input');
+    await page.type('#descripcion-input', INCIDENT_DESCRIPTION);
+    // Tipo de incidente
+    console.log(`${getTimestamp()} ▶ [create-incident-test] Seleccionando tipo: ${INCIDENT_TYPE}`);
+    await page.click('#tipo-incidente-select');
+    await page.waitForSelector(`#tipo-option-${INCIDENT_TYPE}`);
+    await page.click(`#tipo-option-${INCIDENT_TYPE}`);
 
-    await page.$eval('[input-id="descripcion-input"] textarea', (textarea, value) => {
-      textarea.focus();
-      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(textarea), 'value').set;
-      setter.call(textarea, value);
-      textarea.dispatchEvent(new Event('input', { bubbles: true }));
-    }, INCIDENT_DESCRIPTION);
+    // Agregar robot
+    console.log(`${getTimestamp()} ▶ [create-incident-test] Agregando robot ID ${ROBOT_ID}`);
+    await page.waitForSelector(`#agregar-robot-${ROBOT_ID}`);
+    await page.click(`#agregar-robot-${ROBOT_ID}`);
 
-    // Seleccionar el tipo de incidente
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Seleccionando Tipo de Incidente...`);
-    await page.click('[input-id="tipo-incidente-select"]');
-    await page.waitForSelector(`[input-id="tipo-option-${INCIDENT_TYPE}"]`, { visible: true });
-    await page.click(`[input-id="tipo-option-${INCIDENT_TYPE}"]`);
+    // Cambiar estado del robot
+    console.log(`${getTimestamp()} ▶ [create-incident-test] Cambiando estado del robot...`);
+    await page.waitForSelector(`#estado-robot-${ROBOT_ID}`);
+    await page.click(`#estado-robot-${ROBOT_ID}`);
+    await page.waitForSelector(`#estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}`);
+    await page.click(`#estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}`);
 
-    
-    
-    // Hacer clic en el botón AGREGAR del robot
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Agregando robot ${ROBOT_ID}...`);
-    await page.waitForSelector(`[input-id="agregar-robot-${ROBOT_ID}"]`, { visible: true });
-    await page.click(`[input-id="agregar-robot-${ROBOT_ID}"]`);
-
-    await page.waitForSelector(`[input-id="estado-robot-${ROBOT_ID}"]`, { visible: true });
-    await page.click(`[input-id="estado-robot-${ROBOT_ID}"]`);
-
-
-    // Seleccionar el estado del robot
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Seleccionando estado "${ESTADO_DESEADO}"...`);
-    await page.waitForSelector(
-      `[input-id="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`,
-      { visible: true }
-    );
-    await page.click(`[input-id="estado-opcion-${ROBOT_ID}-${ESTADO_DESEADO}"]`);
-
-    // Confirmar el diálogo de creación de incidente
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Preparando confirmación del diálogo...`);
-
-    const dialogHandler = async dialog => {
-      console.log(`${getTimestamp()} ▶ [create-incident-test] Confirmación del navegador: "${dialog.message()}"`);
+    // Confirmar diálogo nativo del navegador
+    console.log(`${getTimestamp()} ▶ [create-incident-test] Confirmando envío...`);
+    page.once('dialog', async dialog => {
+      console.log(`${getTimestamp()} ▶ Confirmación: ${dialog.message()}`);
       await dialog.accept();
-    };
+    });
 
-    page.once('dialog', dialogHandler);
+    await page.waitForSelector('#crear-incidente-btn', { visible: true });
+    await page.click('#crear-incidente-btn');
 
-    console.log(`${getTimestamp()} ▶ [create-incident-test] Enviando formulario...`);
-    await page.waitForSelector('[button-id="crear-incidente-btn"]', { visible: true });
-    await page.click('[button-id="crear-incidente-btn"]');
-
-
-    // Contar incidentes después
+    // Verificar aumento de filas
+    await page.reload();
     const countAfter = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
 
-    // Validación
     if (countAfter > countBefore) {
       console.log(`${getTimestamp()} ` + chalk.green('✔ Incidente creado exitosamente'));
       testPassed = true;

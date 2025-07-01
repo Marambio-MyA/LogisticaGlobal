@@ -28,7 +28,7 @@ function printGlobalResults(totalPassed, totalFailed) {
       ['view-incident-test', './features/view-incident-test'],
       ['update-incident-test', './features/update-incident-test'],
       ['delete-incident-test', './features/delete-incident-test'],
-      ['view-crud-user-test', './features/crud-users-test'],
+      ['crud-users-test', './features/crud-users-test'],
       // Agrega más tests aquí si es necesario
     ];
 

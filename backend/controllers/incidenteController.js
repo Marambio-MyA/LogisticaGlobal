@@ -32,7 +32,7 @@ export const createIncident = async (req, res) => {
 // Obtener todos los incidentes
 export const getIncidents = async (_req, res) => {
   try {
-    const result = await Incident.findAll(); // Cambiado a findAll() para obtener todos los incidentes  
+    const result = await Incident.findAll({order: [['id', 'ASC']]}); // Cambiado a findAll() para obtener todos los incidentes  
     res.status(200).json(result);
   } catch (err) {
     console.error('Error al obtener incidentes:', err);

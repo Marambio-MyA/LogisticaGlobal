@@ -183,6 +183,7 @@ const Incidentes = () => {
           ) : (
             <>
               <TextField
+                id="codigo-view"
                 fullWidth
                 margin="normal"
                 label="Código"
@@ -191,6 +192,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="fecha-view"
                 fullWidth
                 margin="normal"
                 label="Fecha"
@@ -201,6 +203,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="hora-view"
                 fullWidth
                 margin="normal"
                 label="Hora"
@@ -210,6 +213,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="ubicacion-view"
                 fullWidth
                 margin="normal"
                 label="Ubicación"
@@ -218,6 +222,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="tipo-view"
                 fullWidth
                 margin="normal"
                 label="Tipo de Incidente"
@@ -226,6 +231,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="descripcion-view"
                 fullWidth
                 margin="normal"
                 label="Descripción"
@@ -235,6 +241,7 @@ const Incidentes = () => {
                 InputProps={{ readOnly: dialogMode === 'view' }}
               />
               <TextField
+                id="estado-view"
                 fullWidth
                 margin="normal"
                 label="Estado"
