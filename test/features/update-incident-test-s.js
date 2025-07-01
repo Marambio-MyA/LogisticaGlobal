@@ -100,5 +100,3 @@ export async function runUpdateIncidentTests() {
     return { passed, failed };
   }
 }
-
-runUpdateIncidentTests();

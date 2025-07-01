@@ -83,3 +83,17 @@ export async function navagation_to_incidents_selenium(driver) {
   }
   await driver.wait(until.urlContains('/incidentes'), 5000);
 }
+
+export async function navagation_to_users_selenium(driver) {
+  await driver.wait(until.elementLocated(By.css('ul.MuiList-root')), 5000);
+  const items = await driver.findElements(By.css('li'));
+  for (const item of items) {
+    const text = await item.getText();
+    if (text.trim() === 'Usuarios') {
+      await driver.executeScript('arguments[0].scrollIntoView(true);', item);
+      await item.click();
+      return;
+    }
+  }
+  await driver.wait(until.urlContains('/usuarios'), 5000);
+}

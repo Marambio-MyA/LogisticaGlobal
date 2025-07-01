@@ -53,7 +53,7 @@ const Usuarios = () => {
     if (!confirmar) return;
 
     try {
-      await axiosInstance.delete(`/usuario/${id}`);
+      await axiosInstance.delete(`/usuarios/${id}`);
       await fetchUsuarios(); // Actualiza la lista
     } catch (error) {
       console.error("Error al eliminar al usuario:", error);

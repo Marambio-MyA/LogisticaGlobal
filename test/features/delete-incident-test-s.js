@@ -2,116 +2,69 @@ import dotenv from "dotenv";
 import { Builder, By, until } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
 import chalk from "chalk";
-import {
-  getTimestamp,
-  login,
-  navagation_to_incidents,
-} from "../utils/common.js";
+import { getTimestamp, login_selenium, navagation_to_incidents_selenium } from "../utils/common.js";
 
 dotenv.config();
 
 export async function runDeleteIncidentTests() {
-  const options = new chrome.Options().headless();
+  let passed = 0;
+  let failed = 0;
+
+  const options = new chrome.Options();
+  options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless"); // Quita "--headless" si quieres ver el navegador
   const driver = await new Builder()
     .forBrowser("chrome")
     .setChromeOptions(options)
     .build();
-  let testPassed = false;
 
   try {
-    console.log(
-      `${getTimestamp()} ▶ [delete-incident-test] Iniciando sesión...`
-    );
-    await login(driver);
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Iniciando sesión...`);
+    await login_selenium(driver);
 
-    console.log(
-      `${getTimestamp()} ▶ [delete-incident-test] Navegando a Incidentes...`
-    );
-    await navagation_to_incidents(driver);
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Navegando a Incidentes...`);
+    await navagation_to_incidents_selenium(driver);
 
-    await driver.wait(
-      until.elementsLocated(By.css("tbody.MuiTableBody-root tr")),
-      5000
-    );
-    const rowsBefore = await driver.findElements(
-      By.css("tbody.MuiTableBody-root tr")
-    );
+    await driver.wait(until.elementsLocated(By.css("tbody.MuiTableBody-root tr")), 5000);
+    const rowsBefore = await driver.findElements(By.css("tbody.MuiTableBody-root tr"));
     const countBefore = rowsBefore.length;
-    console.log(
-      `${getTimestamp()} ▶ [delete-incident-test] Total de incidentes actuales: ${countBefore}`
-    );
 
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes actuales: ${countBefore}`);
     if (countBefore === 0) throw new Error("No hay incidentes para eliminar");
 
-    // Última fila
+    // Seleccionar última fila y botón de eliminar
     const lastRow = rowsBefore[rowsBefore.length - 1];
-    const deleteIcon = await lastRow.findElement(
-      By.css('[data-testid="DeleteIcon"]')
-    );
+    const deleteBtn = await lastRow.findElement(By.css('[data-testid="DeleteIcon"]'));
 
-    if (!deleteIcon) throw new Error("No se encontró el botón DeleteIcon");
+    await driver.executeScript("arguments[0].scrollIntoView(true);", deleteBtn);
+    await driver.sleep(300);
 
-    console.log(
-      `${getTimestamp()} ▶ [delete-incident-test] Haciendo clic en ícono de eliminar...`
-    );
+    // Manejar alerta
+    const alertPromise = driver.wait(until.alertIsPresent(), 3000);
+    await deleteBtn.click();
 
-    // Hacer scroll hacia el botón y hacer clic
-    await driver.executeScript(
-      "arguments[0].scrollIntoView({block: 'center'});",
-      deleteIcon
-    );
-    await deleteIcon.click();
+    const alert = await alertPromise;
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Confirmación: "${await alert.getText()}"`);
+    await alert.accept();
 
-    // Confirmar el diálogo (este paso depende de cómo tu app implementa el confirm).
-    // Selenium no puede interceptar confirm() nativo de navegador como Puppeteer,
-    // así que este paso puede variar. Si usas un modal propio (ej. Material UI), deberías manejarlo así:
-    try {
-      const confirmBtn = await driver.wait(
-        until.elementLocated(
-          By.xpath(
-            "//button[contains(text(),'Confirmar') or contains(text(),'Sí')]"
-          )
-        ),
-        5000
-      );
-      await confirmBtn.click();
-    } catch (e) {
-      console.warn(
-        `${getTimestamp()} ⚠ No se detectó botón de confirmación. Continuando...`
-      );
-    }
-
-    // Esperar a que el número de incidentes disminuya
-    await driver.wait(async () => {
-      const currentRows = await driver.findElements(
-        By.css("tbody.MuiTableBody-root tr")
-      );
-      return currentRows.length < countBefore;
-    }, 5000);
-
-    const rowsAfter = await driver.findElements(
-      By.css("tbody.MuiTableBody-root tr")
-    );
+    await driver.sleep(2000);
+    const rowsAfter = await driver.findElements(By.css("tbody.MuiTableBody-root tr"));
     const countAfter = rowsAfter.length;
-    console.log(
-      `${getTimestamp()} ▶ [delete-incident-test] Total de incidentes luego de eliminación: ${countAfter}`
-    );
+
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes luego de eliminación: ${countAfter}`);
 
     if (countAfter < countBefore) {
-      console.log(
-        `${getTimestamp()} ` + chalk.green("✔ Incidente eliminado exitosamente")
-      );
-      testPassed = true;
+      console.log(`${getTimestamp()} ` + chalk.green("✔ Incidente eliminado exitosamente"));
+      passed++;
     } else {
       throw new Error("El incidente no fue eliminado correctamente.");
     }
+
   } catch (error) {
-    console.error(chalk.red(`✖ Error: ${error.message}`));
+    console.error(`${getTimestamp()} ` + chalk.red(`✖ Error: ${error.message}`));
+    failed++;
   } finally {
     await driver.quit();
-    return {
-      passed: testPassed ? 1 : 0,
-      failed: testPassed ? 0 : 1,
-    };
   }
+
+  return { passed, failed };
 }

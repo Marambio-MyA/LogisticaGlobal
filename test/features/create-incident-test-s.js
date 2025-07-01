@@ -102,5 +102,3 @@ export async function runCreateIncidentTests() {
 
   return { passed, failed };
 }
-
-runCreateIncidentTests()
