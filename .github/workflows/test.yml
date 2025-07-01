@@ -27,7 +27,8 @@ jobs:
 
       - name: Run Selenium IDE Tests
         run: |
+          npm install -g selenium-side-runner
           selenium-side-runner ./test/main-test.side \
-            --output-directory=./test-results \
-            --timeout=60000 \
-            --headless
+            --base-url ${{ secrets.TEST_URL }} \
+            --capabilities.browserName=chrome \
+            --capabilities.chromeOptions.args='["--headless", "--no-sandbox", "--disable-gpu"]'
