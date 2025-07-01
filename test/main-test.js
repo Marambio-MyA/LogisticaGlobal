@@ -1,5 +1,6 @@
 const { getTimestamp } = require('./utils/common');
 const chalk = require('chalk');
+require('dotenv').config();
 
 // Función para imprimir el resumen de un test específico
 function printResults(label, passed, failed) {
@@ -16,6 +17,7 @@ function printGlobalResults(totalPassed, totalFailed) {
 
 (async () => {
   console.log('\n===================== STARTING ALL TESTS =====================\n');
+  console.log(`URL test: ${process.env.TEST_URL}`);
 
   try {
     let totalPassed = 0;
