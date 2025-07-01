@@ -29,6 +29,5 @@ jobs:
         run: |
           selenium-side-runner ./test/main-test.side \
             --output-directory=./test-results \
-            --output-format=jest \
             --timeout=60000 \
             --headless
