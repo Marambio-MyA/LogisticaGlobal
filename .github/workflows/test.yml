@@ -28,4 +28,4 @@ jobs:
       - name: Run Selenium IDE Tests
         run: |
           npm install -g selenium-side-runner
-          selenium-side-runner --config-file ./selenium-runner.yml ./test/main-test.side
+          selenium-side-runner --config-file ./test.yml ./test/main-test.side
