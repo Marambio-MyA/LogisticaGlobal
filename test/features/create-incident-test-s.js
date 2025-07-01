@@ -18,7 +18,7 @@ export async function runCreateIncidentTests() {
 
   const options = new chrome.Options();
   // ❗️Quitar "--headless" si quieres ver el navegador
-  options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+  options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless");
 
   const driver = await new Builder()
     .forBrowser("chrome")

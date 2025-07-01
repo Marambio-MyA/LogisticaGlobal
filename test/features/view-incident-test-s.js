@@ -12,7 +12,7 @@ const INCIDENT_TYPE = 'Colision';
 
 export async function runViewIncidentTests() {
   const options = new chrome.Options();
-  options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+  options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless"); // Quita "--headless" si quieres ver el navegador
   // Puedes agregar "--headless" si deseas que no se vea el navegador
 
   const driver = await new Builder()

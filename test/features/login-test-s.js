@@ -55,7 +55,7 @@ export async function runLoginTests() {
     const caseNumber = i + 1;
 
     const options = new chrome.Options();
-    options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+    options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--headless");
 
     const driver = await new Builder()
       .forBrowser("chrome")
