@@ -1,20 +1,21 @@
-require('dotenv').config();
+import dotenv from "dotenv";
+import { By, until } from "selenium-webdriver";
 
-
+dotenv.config();
 const URL = process.env.TEST_URL;
 const EMAIL = process.env.TEST_EMAIL;
 const PASSWORD = process.env.TEST_PASSWORD;
 
 //Devuelve un string con la fecha y hora actual en formato [YYYY-MM-DD hh:mm:ss]
-function getTimestamp() {
+export function getTimestamp() {
   const now = new Date();
-  const date = now.toISOString().split('T')[0];
-  const time = now.toTimeString().split(' ')[0];
+  const date = now.toISOString().split("T")[0];
+  const time = now.toTimeString().split(" ")[0];
   return `[${date} ${time}]`;
 }
 
 // Inicia sesión en la aplicación usando Puppeteer
-async function login(page) {
+export async function login(page) {
   await page.goto(URL);
 
   await page.waitForSelector('#email-input');
@@ -22,24 +23,76 @@ async function login(page) {
 
   await page.waitForSelector('#password-input');
   await page.type('#password-input', PASSWORD);
-
-  await page.waitForSelector('#login-button');
-  await page.click('#login-button');
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll("button")).find(
+      (b) => b.textContent.trim() === "Entrar"
+    );
+    if (btn) btn.click();
+  });
 }
 
-async function navagation_to_incidents(page) {
-  await page.waitForSelector('#drawer-incidentes-btn');
-  await page.click('#drawer-incidentes-btn');
+export async function navagation_to_incidents(page) {
+  await page.waitForSelector("ul.MuiList-root");
+  await page.evaluate(() => {
+    const menu = [...document.querySelectorAll("li")].find(
+      (li) => li.textContent.trim() === "Incidentes"
+    );
+    menu?.click();
+  });
 }
 
-async function navagation_to_users(page) {
-  await page.waitForSelector('#drawer-usuarios-btn');
-  await page.click('#drawer-usuarios-btn');
+export async function navagation_to_users(page) {
+  await page.waitForSelector('ul.MuiList-root');
+    await page.evaluate(() => {
+      const menu = [...document.querySelectorAll('li')].find(li => li.textContent.trim() === 'Usuarios');
+      menu?.click();
+    });
 }
 
-module.exports = {
-  getTimestamp,
-  login,
-  navagation_to_incidents,
-  navagation_to_users,
-};
+export async function login_selenium(driver) {
+  await driver.get(URL);
+
+  const emailInput = await driver.wait(until.elementLocated(By.name("email")), 5000);
+  await emailInput.clear();
+  await emailInput.sendKeys(EMAIL);
+
+  const passwordInput = await driver.wait(until.elementLocated(By.css('input[type="password"]')), 5000);
+  await passwordInput.clear();
+  await passwordInput.sendKeys(PASSWORD);
+  const loginBtn = await driver.findElement(
+    By.xpath("//button[normalize-space()='Entrar']")
+  );
+  await loginBtn.click();
+
+  try {
+    await driver.wait(until.urlContains("/dashboard"), 5000);
+  } catch (_) {
+  }
+}
+
+export async function navagation_to_incidents_selenium(driver) {
+  await driver.wait(until.elementLocated(By.css('ul.MuiList-root')), 5000);
+  const menuItems = await driver.findElements(By.css('ul.MuiList-root li'));
+  for (const item of menuItems) {
+    const text = await item.getText();
+    if (text.trim() === 'Incidentes') {
+      await item.click();
+      break;
+    }
+  }
+  await driver.wait(until.urlContains('/incidentes'), 5000);
+}
+
+export async function navagation_to_users_selenium(driver) {
+  await driver.wait(until.elementLocated(By.css('ul.MuiList-root')), 5000);
+  const items = await driver.findElements(By.css('li'));
+  for (const item of items) {
+    const text = await item.getText();
+    if (text.trim() === 'Usuarios') {
+      await driver.executeScript('arguments[0].scrollIntoView(true);', item);
+      await item.click();
+      return;
+    }
+  }
+  await driver.wait(until.urlContains('/usuarios'), 5000);
+}
