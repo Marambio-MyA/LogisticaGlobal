@@ -116,16 +116,21 @@ const Incidentes = () => {
     fetchIncidentes();
   }, []);
 
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
+  const handleOpenDialog = (mode, incidente = null) => {
+    setDialogMode(mode);
+    setSelected(incidente);
+    setDialogOpen(true);
+  };
 
-  const filtered = incidentes.filter((i) => {
-    if (i.incidente_id) {
-      return String(i.incidente_id).includes(searchTerm);
-    }
-    return false;
-  });
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelected(null);
+    fetchIncidentes();
+  };
+
+  const filtered = incidentes.filter((i) =>
+    i.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Box>
