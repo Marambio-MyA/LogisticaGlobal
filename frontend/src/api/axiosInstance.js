@@ -1,10 +1,19 @@
 import axios from 'axios';
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/api',
-});
+const host = import.meta.env.VITE_API_HOST;
+const port = import.meta.env.VITE_API_PORT;
+const env = import.meta.env.VITE_ENV;
 
-// Interceptor para añadir el token en cada request
+const baseURL =
+  env === 'production'
+    ? `https://${host}/api`
+    : env === 'testing'
+      ? `https://${host}/api` // puedes usar host sin puerto
+      : `http://${host}:${port}/api`;
+
+const axiosInstance = axios.create({ baseURL });
+
+// Interceptor para añadir el token de autenticación
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');

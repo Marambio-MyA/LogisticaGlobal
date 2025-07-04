@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -16,54 +16,53 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddIcon from '@mui/icons-material/Add';
-import axiosInstance from '../../api/axiosInstance';
-import FormCreateIncident from './components/FormCreateIncident';
-import FormEditIncident from './components/FormEditIncident';
-import capitalizeFirst from '../utils/utils';
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
+import axiosInstance from "../../api/axiosInstance";
+import FormCreateIncident from "./components/FormCreateIncident";
+import FormEditRobotIncident from "./components/FormEditIncident";
+import capitalizeFirst from "../utils/utils";
 
 const Incidentes = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [incidentes, setIncidentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState('view');
+  const [dialogMode, setDialogMode] = useState("view");
+  const [asignaciones, setAsignaciones] = useState([]);
 
-  const fetchIncidentes = async () => {
+  const fetchAsignaciones = async () => {
     try {
-      const response = await axiosInstance.get('/incidentes');
-      setIncidentes(response.data);
+      const response = await axiosInstance.get("/incidente-robot");
+      setAsignaciones(response.data);
     } catch (error) {
-      console.error('Error al obtener incidentes:', error);
+      console.error("Error al obtener asignaciones:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteIncidente = async (id) => {
-    const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este incidente?');
-    if (!confirmar) return;
-
-    try {
-      await axiosInstance.delete(`/incidentes/${id}`);
-      await fetchIncidentes(); // Actualiza la lista
-    } catch (error) {
-      console.error('Error al eliminar el incidente:', error);
-    }
-  };
-
   useEffect(() => {
-    fetchIncidentes();
+    fetchAsignaciones();
   }, []);
 
   useEffect(() => {
-    console.log(selected);
-  }, [selected]);
+    const fetch = async () => {
+      try {
+        const res = await axiosInstance.get("/incidente-robot");
+        setIncidentes(res.data); // ← aquí están viniendo los RobotIncident
+      } catch (error) {
+        console.error("Error al obtener incidentes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetch();
+  }, []);
 
   const handleOpenDialog = (mode, incidente = null) => {
     setDialogMode(mode);
@@ -71,33 +70,81 @@ const Incidentes = () => {
     setDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = (nuevoIncidente) => {
     setDialogOpen(false);
     setSelected(null);
-    fetchIncidentes();
+    if (nuevoIncidente?.id) {
+      // Si se creó un incidente nuevo, obtener los RobotIncident vinculados
+      axiosInstance
+        .get(`/incidente-robot`)
+        .then((res) => setAsignaciones(res.data))
+        .catch((err) =>
+          console.error(
+            "Error al cargar RobotIncidents del nuevo incidente",
+            err
+          )
+        );
+    } else {
+      fetchAsignaciones();
+    }
   };
 
+  const fetchIncidentes = async () => {
+    try {
+      const response = await axiosInstance.get("/incidente-robot");
+      setIncidentes(response.data);
+    } catch (error) {
+      console.error("Error al obtener incidentes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteAsignacion = async (id) => {
+    const confirmar = window.confirm("¿Deseas eliminar esta asignación?");
+    if (!confirmar) return;
+
+    try {
+      await axiosInstance.delete(`/incidente-robot/${id}`);
+      await fetchAsignaciones();
+    } catch (error) {
+      console.error("Error al eliminar asignación:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchIncidentes();
+  }, []);
+
   const filtered = incidentes.filter((i) =>
-    i.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+    i.codigo?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h4">Incidentes</Typography>
         <Button
           variant="contained"
+          id="nuevo-incidente-btn"
           startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog('create', {
-            codigo: '',
-            fecha: '',
-            hora: '',
-            ubicacion: '',
-            tipo_incidente: '',
-            descripcion: '',
-            estado: '',
-            creado_por: '',
-          })}
+          onClick={() =>
+            handleOpenDialog("create", {
+              codigo: "",
+              fecha: "",
+              hora: "",
+              ubicacion: "",
+              tipo_incidente: "",
+              descripcion: "",
+              estado: "",
+              creado_por: "",
+            })
+          }
         >
           Nuevo Incidente
         </Button>
@@ -121,30 +168,52 @@ const Incidentes = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Código</TableCell>
-                <TableCell>Fecha</TableCell>
-                <TableCell>Ubicación</TableCell>
-                <TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell>
+                <TableCell>Incidente</TableCell>
+                <TableCell>Robot ID</TableCell>
+                <TableCell>Estado Final</TableCell>
+                <TableCell>Trabajo Realizado</TableCell>
+                <TableCell>Fecha Cierre</TableCell>
                 <TableCell align="center">Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filtered.map((i) => (
-                <TableRow key={i.id}>
-                  <TableCell>{i.codigo}</TableCell>
-                  <TableCell>{new Date(i.fecha).toLocaleDateString()}</TableCell>
-                  <TableCell>{i.ubicacion}</TableCell>
-                  <TableCell>{capitalizeFirst(i.tipo_incidente)}</TableCell>
-                  <TableCell>{capitalizeFirst(i.estado,true)}</TableCell>
+              {filtered.map((asig) => (
+                <TableRow key={asig.id}>
+                  <TableCell>{asig.incidente_id}</TableCell>
+                  <TableCell>{asig.robot_id}</TableCell>
+                  <TableCell>
+                    {capitalizeFirst(asig.estado_inicial_robot, true)}
+                  </TableCell>
+                  <TableCell>
+                    {capitalizeFirst(asig.estado_final_robot || "-", true)}
+                  </TableCell>
+                  <TableCell>
+                    {asig.trabajo_realizado?.length > 30
+                      ? `${asig.trabajo_realizado.slice(0, 30)}...`
+                      : asig.trabajo_realizado || "-"}
+                  </TableCell>
+                  <TableCell>
+                    {asig.fecha_cierre
+                      ? new Date(asig.fecha_cierre).toLocaleDateString()
+                      : "-"}
+                  </TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleOpenDialog('view', i)}>
+                    <IconButton
+                      id={`ver-asignacion-${asig.id}`}
+                      onClick={() => handleOpenDialog("view", asig)}
+                    >
                       <VisibilityIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleOpenDialog('edit', { ...i })}>
+                    <IconButton
+                      id={`editar-asignacion-${asig.id}`}
+                      onClick={() => handleOpenDialog("edit", asig)}
+                    >
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => deleteIncidente(i.id)}>
+                    <IconButton
+                      id={`eliminar-asignacion-${asig.id}`}
+                      onClick={() => deleteAsignacion(asig.id)}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -152,8 +221,8 @@ const Incidentes = () => {
               ))}
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    No se encontraron incidentes.
+                  <TableCell colSpan={7} align="center">
+                    No se encontraron asignaciones.
                   </TableCell>
                 </TableRow>
               )}
@@ -161,149 +230,83 @@ const Incidentes = () => {
           </Table>
         </Paper>
       )}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="md">
+
+      <Dialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>
-          {dialogMode === 'view'
-            ? 'Detalle del Incidente'
-            : dialogMode === 'edit'
-            ? 'Editar Incidente'
-            : 'Nuevo Incidente'}
+          {dialogMode === "view"
+            ? "Detalle de Asignación"
+            : dialogMode === "edit"
+            ? "Editar Asignación"
+            : "Nueva Asignación"}
         </DialogTitle>
 
         <DialogContent>
-          {dialogMode === 'create' ? (
+          {dialogMode === "create" ? (
             <FormCreateIncident onSubmit={handleCloseDialog} />
-          ) : dialogMode === 'edit' ? (
-            <FormEditIncident
+          ) : dialogMode === "edit" ? (
+            <FormEditRobotIncident
               open={dialogOpen}
               onClose={handleCloseDialog}
-              incidente={selected}
+              asignacion={selected}
             />
           ) : (
             <>
               <TextField
                 fullWidth
                 margin="normal"
-                label="Código"
-                value={selected?.codigo || ''}
-                onChange={(e) => setSelected({ ...selected, codigo: e.target.value })}
-                InputProps={{ readOnly: dialogMode === 'view' }}
+                label="Incidente"
+                value={selected?.incidente_id || ""}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
                 margin="normal"
-                label="Fecha"
-                type="date"
-                value={selected?.fecha?.split('T')[0] || ''}
-                onChange={(e) => setSelected({ ...selected, fecha: e.target.value })}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{ readOnly: dialogMode === 'view' }}
+                label="Robot ID"
+                value={selected?.robot_id || ""}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
                 margin="normal"
-                label="Hora"
-                type="time"
-                value={selected?.hora || ''}
-                onChange={(e) => setSelected({ ...selected, hora: e.target.value })}
-                InputProps={{ readOnly: dialogMode === 'view' }}
+                label="Estado Final"
+                value={capitalizeFirst(
+                  selected?.estado_final_robot || "-",
+                  true
+                )}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
                 margin="normal"
-                label="Ubicación"
-                value={selected?.ubicacion || ''}
-                onChange={(e) => setSelected({ ...selected, ubicacion: e.target.value })}
-                InputProps={{ readOnly: dialogMode === 'view' }}
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Tipo de Incidente"
-                value={capitalizeFirst(selected?.tipo_incidente) || ''}
-                onChange={(e) => setSelected({ ...selected, tipo_incidente: e.target.value })}
-                InputProps={{ readOnly: dialogMode === 'view' }}
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Descripción"
-                value={selected?.descripcion || ''}
-                onChange={(e) => setSelected({ ...selected, descripcion: e.target.value })}
+                label="Trabajo Realizado"
                 multiline
-                InputProps={{ readOnly: dialogMode === 'view' }}
+                value={selected?.trabajo_realizado || "-"}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
                 margin="normal"
-                label="Estado"
-                value={capitalizeFirst(selected?.estado) || ''}
-                onChange={(e) => setSelected({ ...selected, estado: e.target.value })}
-                InputProps={{ readOnly: dialogMode === 'view' }}
+                label="Fecha de Cierre"
+                value={
+                  selected?.fecha_cierre
+                    ? new Date(selected.fecha_cierre).toLocaleDateString()
+                    : "-"
+                }
+                InputProps={{ readOnly: true }}
               />
-
-              {dialogMode === 'view' && selected?.detalle_robots?.length > 0 && (
-                <Box mt={3}>
-                  <Typography variant="h6" gutterBottom>
-                    Robots Involucrados
-                  </Typography>
-                  {selected.detalle_robots.map((robot, index) => {
-                    let bgColor;
-                    switch (robot.estado) {
-                      case 'en_reparacion':
-                        bgColor = '#fbc02d'; // amarillo
-                        break;
-                      case 'fuera_servicio':
-                        bgColor = '#e53935'; // rojo
-                        break;
-                      case 'operativo':
-                        bgColor = '#43a047'; // verde
-                        break;
-                      default:
-                        bgColor = '#757575';
-                    }
-
-                    return (
-                      <Box
-                        key={index}
-                        sx={{
-                          backgroundColor: bgColor,
-                          color: '#fff',
-                          borderRadius: 2,
-                          padding: 2,
-                          mb: 2,
-                        }}
-                      >
-                        <Typography variant="body1">
-                          <strong>ID:</strong> {robot.id}
-                        </Typography>
-                        <Typography variant="body1">
-                          <strong>Estado:</strong>  {
-                          robot.estado==='en_reparacion' ? ('En reparación')
-                          : robot.estado==='fuera_servicio' ? ('Fuera de servicio')
-                          : robot.estado==='operativo' ? ('Operativo')
-                          : ('Desconocido')
-                          }
-                        </Typography>
-                      </Box>
-                    );
-                  })}
-                </Box>
-              )}
             </>
           )}
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cerrar</Button>
-          {dialogMode === 'edit' && (
-            <Button variant="contained" onClick={() => alert('Guardar no implementado')}>
-              Guardar
-            </Button>
-          )}
         </DialogActions>
       </Dialog>
-
     </Box>
   );
 };
