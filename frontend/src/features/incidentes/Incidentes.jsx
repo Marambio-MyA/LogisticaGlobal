@@ -116,9 +116,16 @@ const Incidentes = () => {
     fetchIncidentes();
   }, []);
 
-  const filtered = incidentes.filter((i) =>
-    i.codigo?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
+
+  const filtered = incidentes.filter((i) => {
+    if (i.incidente_id) {
+      return String(i.incidente_id).includes(searchTerm);
+    }
+    return false;
+  });
 
   return (
     <Box>
