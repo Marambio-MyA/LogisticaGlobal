@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  selenium-tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,13 +19,42 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install Selenium Side Runner
-        run: npm install -g selenium-side-runner
+      # --- Instalar Google Chrome (requerido por Selenium) ---
+      - name: Install Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg2
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
-
-      - name: Run Selenium IDE Tests
+      # --- Instalar Selenium Side Runner ---
+      - name: Install selenium-side-runner
         run: |
           npm install -g selenium-side-runner
-          selenium-side-runner ./test/main-test.side
+
+      # --- Construir el frontend ---
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend with test env
+        working-directory: ./frontend
+        env:
+          VITE_API_HOST: ${{ secrets.VITE_API_HOST }}
+          VITE_ENV: ${{ secrets.VITE_ENV }}
+        run: npm run build -- --mode test
+
+      # --- Servir el frontend en segundo plano ---
+      - name: Serve frontend (background)
+        working-directory: ./frontend
+        run: npx serve -s dist -l 5000 &
+
+      - name: Wait for frontend to be ready
+        run: npx wait-on http://localhost:5000
+
+      # --- Ejecutar archivo .side de Selenium IDE ---
+      - name: Run Selenium IDE Tests
+        run: |
+          selenium-side-runner --browser chrome ./test/main-test.side
