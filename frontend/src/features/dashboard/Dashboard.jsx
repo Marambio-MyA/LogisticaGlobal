@@ -1,14 +1,23 @@
 // features/dashboard/Dashboard.jsx
-import React , { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
-  AppBar, Box, Button, CssBaseline, Drawer,
-  IconButton, List, ListItem, ListItemText,
-  Toolbar, Typography
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../auth/authSlice';
-import { useNavigate, Outlet } from 'react-router-dom';
+  AppBar,
+  Box,
+  Button,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../auth/authSlice";
+import { useNavigate, Outlet } from "react-router-dom";
+import { HideRequire } from "../../components/Autorize";
 
 const drawerWidth = 240;
 
@@ -19,7 +28,7 @@ const Dashboard = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) navigate('/');
+    if (!isAuthenticated) navigate("/");
   }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
@@ -34,55 +43,69 @@ const Dashboard = () => {
     <div>
       <Toolbar />
       <List>
-        <ListItem button onClick={() => navigate('/dashboard')}>
+        <ListItem button onClick={() => navigate("/dashboard")}>
           <ListItemText primary="Inicio" />
         </ListItem>
-        <ListItem button onClick={() => navigate('/dashboard/incidentes')}>
+        <ListItem button onClick={() => navigate("/dashboard/incidentes")}>
           <ListItemText primary="Incidentes" />
         </ListItem>
-        <ListItem button onClick={() => navigate('/dashboard/usuarios')}>
-          <ListItemText primary="Usuarios" />
-        </ListItem>
+        <HideRequire role="admin">
+          <ListItem button onClick={() => navigate("/dashboard/usuarios")}>
+            <ListItemText primary="Usuarios" />
+          </ListItem>
+        </HideRequire>
       </List>
     </div>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` } }}
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+        }}
       >
         <Toolbar>
           <IconButton
             color="inherit"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Bienvenido, {user?.name || 'Usuario'}
+            Bienvenido, {user?.name || "Usuario"}
           </Typography>
-          <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
+          <Button id="cerrar-sesion-button" color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
         </Toolbar>
       </AppBar>
 
       {/* Sidebar */}
-      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { width: drawerWidth } }}
+          sx={{
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": { width: drawerWidth },
+          }}
         >
           {drawer}
         </Drawer>
         <Drawer
           variant="permanent"
-          sx={{ display: { xs: 'none', sm: 'block' }, '& .MuiDrawer-paper': { width: drawerWidth } }}
+          sx={{
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": { width: drawerWidth },
+          }}
           open
         >
           {drawer}
@@ -90,7 +113,14 @@ const Dashboard = () => {
       </Box>
 
       {/* Contenido principal */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
         <Toolbar />
         <Outlet />
       </Box>

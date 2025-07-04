@@ -129,10 +129,16 @@ const Usuarios = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{ROLES[user.rol]}</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleOpenDialog("edit", user)}>
+                  <IconButton
+                    id={`editar-usuario-${user.id || user._id}`}
+                    onClick={() => handleOpenDialog("edit", user)}
+                  >
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={() => deleteUsuario(user.id)}>
+                  <IconButton
+                    id={`eliminar-usuario-${user.id || user._id}`}
+                    onClick={() => deleteUsuario(user.id)}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>

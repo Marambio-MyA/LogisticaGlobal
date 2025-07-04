@@ -104,7 +104,7 @@ const Robots = () => {
     <Paper sx={{ mt: 4, p: 3 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Gestión de Robots</Typography>
-        <Button variant="contained" onClick={handleCreateOpen}>Crear Robot</Button>
+        <Button id="crear-nuevo-robot-button" variant="contained" onClick={handleCreateOpen}>Crear Robot</Button>
       </Box>
 
       <TextField
@@ -142,6 +142,7 @@ const Robots = () => {
                 <TableCell>{robot.ubicacion_actual}</TableCell>
                 <TableCell>
                   <Button
+                    id={`editar-robot-${robot.id}-button`}
                     variant="outlined"
                     color="primary"
                     sx={{ mr: 1 }}
@@ -150,6 +151,7 @@ const Robots = () => {
                     Editar
                   </Button>
                   <Button
+                    id={`eliminar-robot-${robot.id}-button`}
                     variant="outlined"
                     color="error"
                     onClick={() => handleDelete(robot.id)}

@@ -16,7 +16,7 @@ export const createRobot = async (req, res) => {
 // Obtener todos los robots
 export const getRobots = async (req, res) => {
   try {
-    const result = await Robot.findAll();
+    const result = await Robot.findAll({order: [['id', 'ASC']]});
     res.status(200).json(result);
   } catch (err) {
     console.error('Error al obtener los robots:', err);
