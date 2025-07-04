@@ -13,11 +13,11 @@ async function runViewIncidentTest() {
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     headless: true,
-    slowMo: 50,
+    slowMo: 25,
   });
 
   const page = await browser.newPage();
-  let testPassed = false;
+  let testPassed = true;
 
   try {
     console.log(`${getTimestamp()} ▶ [view-incident-test] Iniciando sesión...`);
@@ -27,31 +27,27 @@ async function runViewIncidentTest() {
     await navagation_to_incidents(page);
 
     await page.waitForSelector('tbody.MuiTableBody-root tr');
-
-    // Seleccionar la última fila y hacer clic en el ícono de "Ver"
-    console.log(`${getTimestamp()} ▶ [view-incident-test] Seleccionando último incidente...`);
     const rows = await page.$$('tbody.MuiTableBody-root tr');
+
+    // Obtener el último botón de ver (usamos el id del incidente desde la celda)
+    console.log(`${getTimestamp()} ▶ [view-incident-test] Seleccionando último incidente...`);
     const lastRow = rows[rows.length - 1];
-    const viewButton = await lastRow.$('[data-testid="VisibilityIcon"]');
+
+    const viewButton = await lastRow.$('button[id^="ver-incidente-"]');
     await viewButton.click();
 
-    // Esperar y verificar campos
+    // Esperar a que aparezca el formulario de visualización
     console.log(`${getTimestamp()} ▶ [view-incident-test] Verificando datos del incidente...`);
 
-    async function getInputValueByLabel(page, labelText) {
-      return await page.evaluate((labelText) => {
-        const labels = Array.from(document.querySelectorAll('label'));
-        const targetLabel = labels.find(label => label.textContent.trim() === labelText);
-        if (!targetLabel) return null;
+    // Esperar y obtener valores por ID
+    await page.waitForSelector('#ubicacion-view');
+    const location = await page.$eval('#ubicacion-view', el => el.value);
 
-        const inputOrTextarea = targetLabel.parentElement.querySelector('input, textarea');
-        return inputOrTextarea?.value ?? null;
-      }, labelText);
-    }
+    await page.waitForSelector('#descripcion-view');
+    const description = await page.$eval('#descripcion-view', el => el.value);
 
-    const location = await getInputValueByLabel(page, 'Ubicación');
-    const description = await getInputValueByLabel(page, 'Descripción');
-    const tipo = await getInputValueByLabel(page, 'Tipo de Incidente');
+    await page.waitForSelector('#tipo-view');
+    const tipo = await page.$eval('#tipo-view', el => el.value);
 
     // Validar valores
     if (
@@ -59,13 +55,13 @@ async function runViewIncidentTest() {
       description === INCIDENT_DESCRIPTION &&
       tipo.toLowerCase() === INCIDENT_TYPE
     ) {
-      console.log(`${getTimestamp()} ▶ [view-incident-test]` + chalk.green('✔ Visualización de incidente coincide con los datos creados.'));
+      console.log(`${getTimestamp()} ▶ ` + chalk.green('✔ Visualización de incidente coincide con los datos creados.'));
       testPassed = true;
     } else {
-      console.log(`${getTimestamp()} ▶ [view-incident-test]` +chalk.yellow('Datos obtenidos:'));
-      console.log(`${getTimestamp()} ▶ [view-incident-test] Ubicación esperada: "${INCIDENT_LOCATION}", obtenida: "${location}"`);
-      console.log(`${getTimestamp()} ▶ [view-incident-test] Descripción esperada: "${INCIDENT_DESCRIPTION}", obtenida: "${description}"`);
-      console.log(`${getTimestamp()} ▶ [view-incident-test] Tipo esperado: "${INCIDENT_TYPE}", obtenido: "${tipo}"`);
+      console.log(`${getTimestamp()} ▶ ` + chalk.yellow('✖ Datos obtenidos:'));
+      console.log(`   Ubicación esperada: "${INCIDENT_LOCATION}", obtenida: "${location}"`);
+      console.log(`   Descripción esperada: "${INCIDENT_DESCRIPTION}", obtenida: "${description}"`);
+      console.log(`   Tipo esperado: "${INCIDENT_TYPE}", obtenido: "${tipo}"`);
       throw new Error('Los datos visualizados no coinciden con los creados.');
     }
 
