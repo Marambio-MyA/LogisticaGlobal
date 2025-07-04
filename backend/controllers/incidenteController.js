@@ -5,7 +5,6 @@ import RobotIncident from "../models/robot_incident.model.js";
 
 // Crear un nuevo incidente
 export const createIncident = async (req, res) => {
-  console.log(req.body);
   const incident = req.body;
 
   try {

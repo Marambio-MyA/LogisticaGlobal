@@ -12,7 +12,6 @@ export const Require = ({ children, rol }) => {
 
 export const HideRequire = ({ children, rol }) => {
   const { user } = useSelector((state) => state.auth);
-  console.log(user);
   if (user?.role !== rol) {
     return null;
   }
