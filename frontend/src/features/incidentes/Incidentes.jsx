@@ -61,10 +61,6 @@ const Incidentes = () => {
     fetchIncidentes();
   }, []);
 
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
-
   const handleOpenDialog = (mode, incidente = null) => {
     setDialogMode(mode);
     setSelected(incidente);
