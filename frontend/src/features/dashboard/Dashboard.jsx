@@ -80,9 +80,7 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Bienvenido, {user?.name || "Usuario"}
           </Typography>
-          <Button color="inherit" onClick={handleLogout}>
-            Cerrar sesión
-          </Button>
+          <Button id="cerrar-sesion-button" color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
         </Toolbar>
       </AppBar>
 

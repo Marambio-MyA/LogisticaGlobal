@@ -1,5 +1,5 @@
-import { sequelize } from '../config/database.js';
-import RobotIncident from '../models/robot_incident.model.js';
+import { sequelize } from "../config/database.js";
+import RobotIncident from "../models/robot_incident.model.js";
 
 // Crear incidente_robot
 export const createIncidentRobot = async (req, res) => {
@@ -9,8 +9,8 @@ export const createIncidentRobot = async (req, res) => {
     const result = await RobotIncident.create(robot_incident);
     res.status(201).json(result);
   } catch (err) {
-    console.error('Error al crear incidente_robot:', err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error("Error al crear incidente_robot:", err);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -20,8 +20,8 @@ export const getIncidentRobot = async (_req, res) => {
     const result = await RobotIncident.findAll();
     res.status(200).json(result);
   } catch (err) {
-    console.error('Error al obtener incidentes_robot:', err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error("Error al obtener incidentes_robot:", err);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -31,12 +31,12 @@ export const getIncidentRobotById = async (req, res) => {
   try {
     const result = await RobotIncident.findByPk(id);
     if (!result) {
-      return res.status(404).json({ error: 'Registro no encontrado' });
+      return res.status(404).json({ error: "Registro no encontrado" });
     }
     res.status(200).json(result);
   } catch (err) {
-    console.error('Error al obtener incidente_robot:', err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error("Error al obtener incidente_robot:", err);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -47,15 +47,17 @@ export const updateIncidetRobot = async (req, res) => {
 
   try {
     const robot = await RobotIncident.findByPk(robot_incident.robot_id);
-    const result = await RobotIncident.update(robot_incident, { where: { id } });
+    const result = await RobotIncident.update(robot_incident, {
+      where: { id },
+    });
     if (!result) {
-      return res.status(404).json({ error: 'Registro no encontrado' });
+      return res.status(404).json({ error: "Registro no encontrado" });
     }
 
     res.status(200).json(result);
   } catch (err) {
-    console.error('Error al actualizar incidente_robot:', err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error("Error al actualizar incidente_robot:", err);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };
 
@@ -65,11 +67,11 @@ export const deleteIncidentRobot = async (req, res) => {
   try {
     const result = await RobotIncident.destroy({ where: { id } });
     if (!result) {
-      return res.status(404).json({ error: 'Registro no encontrado' });
+      return res.status(404).json({ error: "Registro no encontrado" });
     }
-    res.status(200).json({ message: 'Registro eliminado correctamente' });
+    res.status(200).json({ message: "Registro eliminado correctamente" });
   } catch (err) {
-    console.error('Error al eliminar incidente_robot:', err);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error("Error al eliminar incidente_robot:", err);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 };

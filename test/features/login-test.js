@@ -80,25 +80,22 @@ async function runLoginTests() {
     await page.goto(URL);
 
     // Email
-    await page.waitForSelector('input[name="email"]');
+    await page.waitForSelector('#email-input');
     await page.evaluate(() => {
-      document.querySelector('input[name="email"]').value = '';
+      document.querySelector('#email-input').value = '';
     });
-    await page.type('input[name="email"]', testCase.email);
+    await page.type('#email-input', testCase.email);
 
     // Password
-    await page.waitForSelector('input[type="password"]');
+    await page.waitForSelector('#password-input');
     await page.evaluate(() => {
-      document.querySelector('input[type="password"]').value = '';
+      document.querySelector('#password-input').value = '';
     });
-    await page.type('input[type="password"]', testCase.password);
+    await page.type('#password-input', testCase.password);
 
     // Click en botón "Entrar"
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button'))
-        .find(b => b.textContent.trim() === 'Entrar');
-      if (btn) btn.click();
-    });
+    await page.waitForSelector('#login-button');
+    await page.click('#login-button');
 
     // Esperamos navegación: si falla el login, no redirige
     try {

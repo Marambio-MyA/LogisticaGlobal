@@ -64,16 +64,17 @@ const FormCreateUser = ({ onSubmit }) => {
   return (
     <Box>
       <TextField
+        id="nombre-input"
         fullWidth
         margin="normal"
         label="Nombre"
         required
         value={user.nombre}
         onChange={handleChange("nombre")}
-        slotProps={{ input: { 'input-id': 'nombre-input' } }}
       />
 
       <TextField
+        id="email-input"
         fullWidth
         margin="normal"
         label="Correo"
@@ -81,10 +82,10 @@ const FormCreateUser = ({ onSubmit }) => {
         value={user.email}
         onChange={handleChange("email")}
         required
-        slotProps={{ input: { "input-id": "email-input" } }}
       />
 
       <TextField
+        id="password-input"
         fullWidth
         margin="normal"
         label="Contraseña"
@@ -92,17 +93,15 @@ const FormCreateUser = ({ onSubmit }) => {
         value={user.password}
         onChange={handleChange("password")}
         required
-        slotProps={{ input: { "input-id": "password-input" } }}
       />
 
       <TextField
+        id="rol-select"
         select
         fullWidth
         label="Rol"
         value={user.rol}
         onChange={handleChange("rol")}
-        // slotProps={{ select: { 'input-id': 'rol-select' }}}
-        id="rol-select"
       >
         {Object.entries(ROLES).map(([rolKey, rolLabel]) => (
           <MenuItem key={rolKey} value={rolKey} id={`rol-option-${rolKey}`}>
@@ -112,7 +111,7 @@ const FormCreateUser = ({ onSubmit }) => {
       </TextField>
 
       <Box mt={3} textAlign="right">
-        <Button variant="contained" onClick={handleSave}>
+        <Button id="crear-usuario-btn" variant="contained" onClick={handleSave}>
           Crear usuario
         </Button>
       </Box>

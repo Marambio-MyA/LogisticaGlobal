@@ -49,6 +49,7 @@ const Login = () => {
           </Typography>
           {error && <Alert severity="error">{error}</Alert>}
           <TextField
+            id="email-input"
             fullWidth
             label="Correo electrónico"
             variant="outlined"
@@ -60,6 +61,7 @@ const Login = () => {
             name="email"
           />
           <TextField
+            id="password-input"
             fullWidth
             required
             label="Contraseña"
@@ -70,6 +72,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button
+            id="login-button"
             variant="contained"
             color="primary"
             fullWidth

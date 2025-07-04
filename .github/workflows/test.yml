@@ -1,4 +1,4 @@
-name: Puppeteer Frontend Tests
+name: Selenium IDE Tests
 
 on:
   push:
@@ -17,9 +17,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
-      # --- Construir frontend ---
+      # --- Instalar Google Chrome (requerido por Selenium) ---
+      - name: Install Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg2
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      # --- Construir el frontend ---
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm install
@@ -31,21 +41,18 @@ jobs:
           VITE_ENV: ${{ secrets.VITE_ENV }}
         run: npm run build -- --mode test
 
-      # --- Servir frontend en background ---
-      - name: Serve frontend build (background)
+      # --- Servir el frontend en segundo plano ---
+      - name: Serve frontend (background)
         working-directory: ./frontend
-        run: npx serve -s dist -l 5000 &
+        run: npx serve -s dist -l 5000
 
       - name: Wait for frontend to be ready
         run: npx wait-on http://localhost:5000
 
-      # --- Ejecutar tests Puppeteer ---
-      - name: Run Puppeteer tests
-        working-directory: ./test
-        env:
-          TEST_URL: ${{ secrets.TEST_URL }}
-          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-        run: |
-          npm install
-          node main-test.js
+      # --- Instalar Selenium Side Runner ---
+      - name: Install selenium-side-runner
+        run: npm install -g selenium-side-runner@latest
+
+      # --- Ejecutar archivo .side de Selenium IDE ---
+      - name: Run Selenium IDE Tests
+        run: selenium-side-runner ./test/main-test.side

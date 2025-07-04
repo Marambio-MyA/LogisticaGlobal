@@ -1,5 +1,3 @@
-// features/delete-incident-test.js
-
 require('dotenv').config();
 const puppeteer = require('puppeteer');
 const chalk = require('chalk');
@@ -9,7 +7,7 @@ async function runDeleteIncidentTest() {
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     headless: true,
-    slowMo: 50,
+    slowMo: 25,
   });
 
   const page = await browser.newPage();
@@ -23,49 +21,48 @@ async function runDeleteIncidentTest() {
     await navagation_to_incidents(page);
 
     await page.waitForSelector('tbody.MuiTableBody-root tr');
-    const countBefore = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
+    const rows = await page.$$('tbody.MuiTableBody-root tr');
+    const countBefore = rows.length;
     console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes actuales: ${countBefore}`);
 
     if (countBefore === 0) throw new Error('No hay incidentes para eliminar');
 
-    // Seleccionar última fila
-    const rows = await page.$$('tbody.MuiTableBody-root tr');
     const lastRow = rows[rows.length - 1];
-    const deleteIcon = await lastRow.$('[data-testid="DeleteIcon"]');
-    if (!deleteIcon) throw new Error('No se encontró el botón DeleteIcon');
 
-    // Escuchar el diálogo de confirmación
+    // Buscar el botón cuyo ID comienza con eliminar-incidente-
+    const deleteButton = await lastRow.$('button[id^="eliminar-incidente-"]');
+    if (!deleteButton) throw new Error('No se encontró el botón de eliminar en la última fila');
+
+    const parentButton = await deleteButton.evaluateHandle(el => el.closest('button'));
+
+    // Escuchar confirmación
     page.once('dialog', async (dialog) => {
       console.log(`${getTimestamp()} ▶ [delete-incident-test] Confirmación: "${dialog.message()}"`);
       await dialog.accept();
     });
 
-    // Hacer clic en el ícono de eliminar
-    await deleteIcon.evaluate(btn => btn.scrollIntoView({ behavior: 'instant', block: 'center' }));
-    await deleteIcon.click();
+    // Hacer clic
+    await parentButton.click();
 
-    // Esperar que el número de incidentes disminuya
+    // Esperar que el incidente se elimine (es decir, que la cantidad de filas baje)
     await page.waitForFunction(
-      (prevCount) => {
-        const rows = document.querySelectorAll('tbody.MuiTableBody-root tr');
-        return rows.length < prevCount;
-      },
+      (prevCount) => document.querySelectorAll('tbody.MuiTableBody-root tr').length < prevCount,
       {},
       countBefore
     );
 
     const countAfter = await page.$$eval('tbody.MuiTableBody-root tr', rows => rows.length);
-    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total de incidentes leugo de eliminación: ${countAfter}`);
+    console.log(`${getTimestamp()} ▶ [delete-incident-test] Total luego de eliminar: ${countAfter}`);
 
     if (countAfter < countBefore) {
-      console.log(`${getTimestamp()} `+ chalk.green('✔ Incidente eliminado exitosamente'));
+      console.log(`${getTimestamp()} ` + chalk.green('✔ Incidente eliminado exitosamente'));
       testPassed = true;
     } else {
       throw new Error('El incidente no fue eliminado correctamente.');
     }
 
   } catch (error) {
-    console.error(chalk.red(`✖ Error: ${error.message}`));
+    console.error(`${getTimestamp()} ` + chalk.red(`✖ Error: ${error.message}`));
   } finally {
     await browser.close();
     return {
