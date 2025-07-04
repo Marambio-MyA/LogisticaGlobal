@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, Paper, Button } from '@mui/material';
 import axiosInstance from '../../api/axiosInstance';
 import capitalizeFirst from '../utils/utils';
 
 import RobotStatusPieChart from './components/RobotStatusPieChart';
 import IncidentesBarChart from './components/IncidentesBarChart';
 import Robots from './components/Robots'; // CRUD de robots
+
+import { useSelector } from 'react-redux';
+import { generarReportePDF } from './components/ReportePDFIncidentes';
 
 // Mapa de colores por estado
 const colorByEstado = {
@@ -21,6 +24,7 @@ const DashboardHome = () => {
   const [robots, setRobots] = useState([]);
   const [incidentes, setIncidentes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useSelector((state) => state.auth);
 
   const fetchData = async () => {
     try {
@@ -87,9 +91,18 @@ const DashboardHome = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Panel de Control
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h4" gutterBottom>
+          Panel de Control
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => generarReportePDF(incidentes, user)}
+        >
+          Generar Reporte
+        </Button>
+      </Box>
 
       <Paper sx={{ display: 'flex', justifyContent: 'space-around', p: 2, gap: 4, padding: 5 }}>
         <RobotStatusPieChart data={robotStatusData} colors={colorByEstado} />
