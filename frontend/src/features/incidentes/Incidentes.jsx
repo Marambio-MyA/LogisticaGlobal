@@ -116,20 +116,8 @@ const Incidentes = () => {
     fetchIncidentes();
   }, []);
 
-  const handleOpenDialog = (mode, incidente = null) => {
-    setDialogMode(mode);
-    setSelected(incidente);
-    setDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setSelected(null);
-    fetchIncidentes();
-  };
-
   const filtered = incidentes.filter((i) =>
-    i.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+    i.codigo?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

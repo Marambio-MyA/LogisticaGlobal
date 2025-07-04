@@ -49,7 +49,7 @@ const Dashboard = () => {
         <ListItem button onClick={() => navigate("/dashboard/incidentes")}>
           <ListItemText primary="Incidentes" />
         </ListItem>
-        <HideRequire role="admin">
+        <HideRequire rol="admin">
           <ListItem button onClick={() => navigate("/dashboard/usuarios")}>
             <ListItemText primary="Usuarios" />
           </ListItem>
@@ -80,7 +80,13 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Bienvenido, {user?.name || "Usuario"}
           </Typography>
-          <Button id="cerrar-sesion-button" color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
+          <Button
+            id="cerrar-sesion-button"
+            color="inherit"
+            onClick={handleLogout}
+          >
+            Cerrar sesión
+          </Button>
         </Toolbar>
       </AppBar>
 
